@@ -23,6 +23,7 @@ interface Thread {
   messages: Message[];
   outputImages: string[];
   createdAt: Date;
+  isFrozen: boolean;
 }
 
 
@@ -56,6 +57,7 @@ const [charIndex, setCharIndex] = useState(0);
       createdAt: new Date(),
       messages: [],
       outputImages: [],
+      isFrozen: false,
     },
   ]);
 
@@ -123,7 +125,7 @@ const [charIndex, setCharIndex] = useState(0);
 
   const handleSendMessage = () => {
     if (!inputText.trim() && uploadedImages.length === 0) return;
-    if (isGenerating) return;
+    if (isGenerating || currentThread?.isFrozen) return;
 
     setIsGenerating(true);
 
@@ -146,6 +148,7 @@ const [charIndex, setCharIndex] = useState(0);
                   ? inputText.slice(0, 30) +
                     (inputText.length > 30 ? "..." : "")
                   : thread.title,
+              isFrozen: true,
             }
           : thread,
       ),
@@ -157,15 +160,8 @@ const [charIndex, setCharIndex] = useState(0);
       textareaRef.current.style.height = "auto";
     }
 
-    // Simulate AI response with generated images
+    // Simulate AI response with generated images only (no text)
     setTimeout(() => {
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: "I've generated some images based on your prompt. You can see them in the gallery above.",
-        isUser: false,
-        timestamp: new Date(),
-      };
-
       const generatedImages = [
         "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
@@ -182,7 +178,6 @@ const [charIndex, setCharIndex] = useState(0);
           thread.id === selectedThread
             ? {
                 ...thread,
-                messages: [...thread.messages, aiResponse],
                 outputImages: generatedImages,
               }
             : thread,
@@ -219,10 +214,12 @@ const [charIndex, setCharIndex] = useState(0);
       messages: [],
       outputImages: [],
       createdAt: new Date(),
+      isFrozen: false,
     };
     setThreads((prev) => [newThread, ...prev]);
     setSelectedThread(newThread.id);
     setSelectedImageIndex(null);
+    setIsGenerating(false);
   };
 
   const scrollGallery = (direction: "left" | "right") => {
@@ -393,7 +390,7 @@ useEffect(() => {
                           : "bg-gray-100 text-gray-900",
                       )}
                     >
-                      <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                      <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-normal">
                         {message.text}
                       </div>
 
@@ -461,7 +458,7 @@ useEffect(() => {
             <div
               className={cn(
                 "relative bg-white border-2 border-gray-300 rounded-xl p-4 transition-opacity",
-                isGenerating && "opacity-50",
+                (isGenerating || currentThread?.isFrozen) && "opacity-50",
               )}
             >
               <div className="pr-20">
@@ -474,7 +471,7 @@ useEffect(() => {
                   placeholder={placeholderText || "Start typing your prompt here..."}
                   className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
                   rows={1}
-                  disabled={isGenerating}
+                  disabled={isGenerating || currentThread?.isFrozen}
                 />
               </div>
 
@@ -482,7 +479,7 @@ useEffect(() => {
               <button
                 className="absolute bottom-2 left-2 p-1 h-6 w-6 text-gray-400 hover:text-gray-600"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isGenerating}
+                disabled={isGenerating || currentThread?.isFrozen}
               >
                 <Paperclip size={16} />
               </button>
@@ -492,7 +489,8 @@ useEffect(() => {
                 onClick={handleSendMessage}
                 disabled={
                   (!inputText.trim() && uploadedImages.length === 0) ||
-                  isGenerating
+                  isGenerating ||
+                  currentThread?.isFrozen
                 }
                 className="absolute bottom-2 right-2 p-2 h-8 w-8 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:hover:bg-blue-500 rounded-full border-0 flex items-center justify-center"
               >
