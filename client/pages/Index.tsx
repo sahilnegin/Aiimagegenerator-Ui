@@ -369,6 +369,12 @@ export default function Index() {
       }
     } catch (error) {
       console.error('Error submitting to n8n webhook:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        inputText: currentInputText,
+        hasImages: currentUploadedImages.length > 0
+      });
 
       // No fallback images - just show empty gallery on error
       setThreads((prevThreads) =>
