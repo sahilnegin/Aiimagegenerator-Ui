@@ -34,7 +34,6 @@ export default function Index() {
   const [inputText, setInputText] = useState("");
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isFrozen, setIsFrozen] = useState(false);
   const [threads, setThreads] = useState<Thread[]>([
     {
       id: "1",
@@ -42,6 +41,7 @@ export default function Index() {
       createdAt: new Date(),
       messages: [],
       outputImages: [],
+      isFrozen: false,
     },
   ]);
 
