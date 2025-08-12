@@ -491,9 +491,20 @@ export default function Index() {
       {/* Overlay */}
       {isSidePanelOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30"
           onClick={() => setIsSidePanelOpen(false)}
-        />
+          style={{ pointerEvents: 'none' }}
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              pointerEvents: 'auto',
+              background: 'transparent',
+              marginLeft: '320px' // Width of sidebar (w-80 = 320px)
+            }}
+            onClick={() => setIsSidePanelOpen(false)}
+          />
+        </div>
       )}
     </div>
   );
