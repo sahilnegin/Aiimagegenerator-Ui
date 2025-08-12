@@ -312,20 +312,43 @@ export default function Index() {
       if (webhookResponse.ok) {
         const result = await webhookResponse.json();
         console.log('n8n webhook response:', result);
+        console.log('Response type:', typeof result);
+        console.log('Response keys:', Object.keys(result || {}));
 
         // Parse the response and extract generated images
         let generatedImages: string[] = [];
 
         if (result && typeof result === 'object') {
-          // Try to extract image URLs from the response
-          // This might need adjustment based on the actual response format from n8n
+          // Try multiple possible response formats
           if (result.images && Array.isArray(result.images)) {
             generatedImages = result.images;
+            console.log('Found images in result.images:', generatedImages);
           } else if (result.imageUrls && Array.isArray(result.imageUrls)) {
             generatedImages = result.imageUrls;
+            console.log('Found images in result.imageUrls:', generatedImages);
+          } else if (result.data && Array.isArray(result.data)) {
+            generatedImages = result.data;
+            console.log('Found images in result.data:', generatedImages);
+          } else if (result.output && Array.isArray(result.output)) {
+            generatedImages = result.output;
+            console.log('Found images in result.output:', generatedImages);
+          } else if (Array.isArray(result)) {
+            generatedImages = result;
+            console.log('Result is an array:', generatedImages);
+          } else {
+            // Look for any array of strings that might be image URLs
+            Object.keys(result).forEach(key => {
+              if (Array.isArray(result[key]) && result[key].length > 0) {
+                if (typeof result[key][0] === 'string' && result[key][0].includes('http')) {
+                  generatedImages = result[key];
+                  console.log(`Found images in result.${key}:`, generatedImages);
+                }
+              }
+            });
           }
-          // No fallback images - only show what the API returns
         }
+
+        console.log('Final generatedImages:', generatedImages);
 
         setThreads((prevThreads) =>
           prevThreads.map((thread) =>
@@ -340,6 +363,8 @@ export default function Index() {
 
         setIsGenerating(false);
       } else {
+        const errorText = await webhookResponse.text();
+        console.error(`Webhook request failed: ${webhookResponse.status}`, errorText);
         throw new Error(`Webhook request failed: ${webhookResponse.status}`);
       }
     } catch (error) {
