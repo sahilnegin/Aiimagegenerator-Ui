@@ -28,7 +28,6 @@ interface ChatMessage {
 }
 
 export default function Index() {
-  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
   const [selectedThread, setSelectedThread] = useState<string>("1");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null,
@@ -107,7 +106,7 @@ export default function Index() {
 
   const handleSendMessage = () => {
     if (!inputText.trim() && uploadedImages.length === 0) return;
-    if (isGenerating) return; // Prevent sending while generating
+    if (isGenerating) return;
 
     setIsGenerating(true);
 
@@ -151,11 +150,12 @@ export default function Index() {
       };
 
       const generatedImages = [
-        "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop",
-        "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=400&h=300&fit=crop",
+        "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&h=200&fit=crop",
       ];
 
       setThreads((prevThreads) =>
@@ -170,8 +170,8 @@ export default function Index() {
         ),
       );
 
-      setIsGenerating(false); // Re-enable input after generation
-    }, 3000); // Increased to 3 seconds to simulate real generation time
+      setIsGenerating(false);
+    }, 3000);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,7 +203,6 @@ export default function Index() {
     };
     setThreads((prev) => [newThread, ...prev]);
     setSelectedThread(newThread.id);
-    setIsSidePanelOpen(false);
     setSelectedImageIndex(null);
   };
 
@@ -218,131 +217,117 @@ export default function Index() {
   };
 
   return (
-    <div className="h-screen bg-white flex relative">
-      {/* Sidebar */}
-      <div
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 w-80 bg-gray-50 border-r border-gray-200 transition-transform duration-300",
-          isSidePanelOpen ? "translate-x-0" : "-translate-x-full",
-        )}
-      >
-        <div className="flex flex-col h-full">
-          <div className="p-4 border-b border-gray-200">
-            <Button
-              onClick={createNewChat}
-              className="w-full justify-center gap-2 bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus size={16} />
-              New Chat
-            </Button>
+    <div className="h-screen bg-gray-100 flex">
+      {/* Always Visible Sidebar */}
+      <div className="w-40 bg-white border-2 border-blue-400 flex flex-col">
+        {/* Chat Icon */}
+        <div className="p-3 border-b border-gray-200">
+          <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+            <MessageSquare size={16} className="text-white" />
           </div>
+        </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-2">
-              {threads.map((thread) => (
-                <div
-                  key={thread.id}
-                  onClick={() => {
-                    setSelectedThread(thread.id);
-                    setIsSidePanelOpen(false);
-                    setSelectedImageIndex(null);
-                  }}
-                  className={cn(
-                    "p-3 rounded-lg cursor-pointer transition-colors group",
-                    selectedThread === thread.id
-                      ? "bg-blue-100 border border-blue-200"
-                      : "hover:bg-gray-100",
-                  )}
-                  title={thread.messages[0]?.text || "New Chat"}
-                >
-                  <div className="font-medium text-sm text-gray-900 truncate">
-                    {thread.title}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {thread.messages.length} messages •{" "}
-                    {thread.outputImages.length} images
-                  </div>
-                </div>
-              ))}
+        {/* New Chat Button */}
+        <div className="p-3 border-b border-gray-200">
+          <Button
+            onClick={createNewChat}
+            variant="outline"
+            className="w-full justify-start text-xs h-8 px-2"
+          >
+            <Plus size={12} className="mr-1" />
+            New Chat
+          </Button>
+        </div>
+
+        {/* Thread List */}
+        <div className="flex-1 overflow-y-auto">
+          {threads.map((thread) => (
+            <div
+              key={thread.id}
+              onClick={() => {
+                setSelectedThread(thread.id);
+                setSelectedImageIndex(null);
+              }}
+              className={cn(
+                "px-3 py-2 text-xs cursor-pointer transition-colors border-b border-gray-100",
+                selectedThread === thread.id
+                  ? "bg-blue-50 border-l-2 border-l-blue-500"
+                  : "hover:bg-gray-50",
+              )}
+              title={thread.messages[0]?.text || "New Chat"}
+            >
+              <div className="truncate text-gray-700">{thread.title}</div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
-            className="gap-2"
-          >
-            <MessageSquare size={16} />
-            {isSidePanelOpen ? "Close" : "Chat"}
-          </Button>
-          <h1 className="font-semibold text-gray-900">AI Image Generator</h1>
-          <div className="w-16" />
-        </div>
-
+      <div className="flex-1 flex flex-col bg-white">
         {/* Image Gallery at Top */}
-        {currentThread?.outputImages &&
-          currentThread.outputImages.length > 0 && (
-            <div className="bg-gray-50 border-b border-gray-200">
-              <div className="p-6">
-                <div className="relative">
-                  {currentThread.outputImages.length > 4 && (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white"
-                        onClick={() => scrollGallery("left")}
-                      >
-                        <ChevronLeft size={16} />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white"
-                        onClick={() => scrollGallery("right")}
-                      >
-                        <ChevronRight size={16} />
-                      </Button>
-                    </>
-                  )}
-
-                  <div
-                    ref={galleryRef}
-                    className="flex gap-4 overflow-x-auto scrollbar-hide"
+        <div className="h-32 bg-gray-50 border-b border-gray-200 p-4">
+          {currentThread?.outputImages &&
+          currentThread.outputImages.length > 0 ? (
+            <div className="relative h-full">
+              {currentThread.outputImages.length > 6 && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white h-8 w-8 p-0"
+                    onClick={() => scrollGallery("left")}
                   >
-                    {currentThread.outputImages.map((image, index) => (
-                      <div
-                        key={index}
-                        className={cn(
-                          "flex-shrink-0 cursor-pointer transition-all duration-200",
-                          selectedImageIndex === index &&
-                            "ring-4 ring-gray-400",
-                        )}
-                        onClick={() =>
-                          setSelectedImageIndex(
-                            selectedImageIndex === index ? null : index,
-                          )
-                        }
-                      >
-                        <img
-                          src={image}
-                          alt={`Generated image ${index + 1}`}
-                          className="w-72 h-56 object-cover rounded-lg"
-                        />
-                      </div>
-                    ))}
+                    <ChevronLeft size={14} />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white h-8 w-8 p-0"
+                    onClick={() => scrollGallery("right")}
+                  >
+                    <ChevronRight size={14} />
+                  </Button>
+                </>
+              )}
+
+              <div
+                ref={galleryRef}
+                className="flex gap-3 overflow-x-auto scrollbar-hide h-full"
+              >
+                {currentThread.outputImages.map((image, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "flex-shrink-0 cursor-pointer transition-all duration-200 h-full",
+                      selectedImageIndex === index &&
+                        "ring-3 ring-gray-400 rounded",
+                    )}
+                    onClick={() =>
+                      setSelectedImageIndex(
+                        selectedImageIndex === index ? null : index,
+                      )
+                    }
+                  >
+                    <img
+                      src={image}
+                      alt={`Generated image ${index + 1}`}
+                      className="h-full w-24 object-cover rounded bg-gray-200"
+                    />
                   </div>
-                </div>
+                ))}
               </div>
             </div>
+          ) : (
+            <div className="flex gap-3 h-full">
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 h-full w-24 bg-gray-200 rounded"
+                />
+              ))}
+            </div>
           )}
+        </div>
 
         {/* Selected Image Large View */}
         {selectedImageIndex !== null &&
@@ -358,50 +343,51 @@ export default function Index() {
             </div>
           )}
 
-        {/* Chat Messages */}
+        {/* Chat Messages (when no image selected) */}
         {selectedImageIndex === null && (
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {currentThread?.messages.map((message) => (
-              <div key={message.id} className="flex">
-                <div className="flex-1 max-w-3xl">
-                  <div
-                    className={cn(
-                      "p-4 rounded-lg",
-                      message.isUser
-                        ? "bg-blue-500 text-white ml-auto max-w-2xl"
-                        : "bg-gray-100 text-gray-900",
-                    )}
-                  >
-                    <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                      {message.text}
-                    </div>
-
-                    {/* Display uploaded images */}
-                    {message.uploadedImages &&
-                      message.uploadedImages.length > 0 && (
-                        <div className="mt-3 grid grid-cols-2 gap-2">
-                          {message.uploadedImages.map((image, index) => (
-                            <img
-                              key={index}
-                              src={image}
-                              alt={`Uploaded image ${index + 1}`}
-                              className="w-full h-32 object-cover rounded border-2 border-white/20"
-                            />
-                          ))}
-                        </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="max-w-4xl mx-auto space-y-4">
+              {currentThread?.messages.map((message) => (
+                <div key={message.id} className="flex">
+                  <div className="flex-1">
+                    <div
+                      className={cn(
+                        "p-4 rounded-lg max-w-2xl",
+                        message.isUser
+                          ? "bg-blue-500 text-white ml-auto"
+                          : "bg-gray-100 text-gray-900",
                       )}
+                    >
+                      <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                        {message.text}
+                      </div>
+
+                      {message.uploadedImages &&
+                        message.uploadedImages.length > 0 && (
+                          <div className="mt-3 grid grid-cols-2 gap-2">
+                            {message.uploadedImages.map((image, index) => (
+                              <img
+                                key={index}
+                                src={image}
+                                alt={`Uploaded image ${index + 1}`}
+                                className="w-full h-32 object-cover rounded border-2 border-white/20"
+                              />
+                            ))}
+                          </div>
+                        )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
           </div>
         )}
 
-        {/* Input Area */}
-        <div className="p-6 border-t border-gray-200 bg-white">
+        {/* Input Area at Bottom */}
+        <div className="border-t border-gray-200 p-6">
           {uploadedImages.length > 0 && (
-            <div className="mb-4 flex gap-2 flex-wrap">
+            <div className="mb-4 flex gap-2 flex-wrap max-w-4xl mx-auto">
               {uploadedImages.map((image, index) => (
                 <div key={index} className="relative">
                   <img
@@ -422,14 +408,14 @@ export default function Index() {
             </div>
           )}
 
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div
               className={cn(
-                "flex items-end gap-3 bg-white border border-gray-300 rounded-lg overflow-hidden transition-opacity",
+                "flex items-end gap-3 bg-white border border-gray-300 rounded-lg p-3 transition-opacity",
                 isGenerating && "opacity-50",
               )}
             >
-              <div className="flex-1 relative">
+              <div className="flex-1">
                 <textarea
                   ref={textareaRef}
                   value={inputText}
@@ -439,23 +425,23 @@ export default function Index() {
                   placeholder={
                     isGenerating
                       ? "Generating images... Please wait"
-                      : "Describe the image you want to generate... (Ctrl+V to paste images)"
+                      : "DOG is a smart touch panel, that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives."
                   }
-                  className="w-full resize-none border-0 px-4 py-3 focus:outline-none focus:ring-0 text-sm min-h-[48px] max-h-48"
+                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent"
                   rows={1}
                   disabled={isGenerating}
                 />
               </div>
 
-              <div className="flex items-center gap-2 px-3">
+              <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="p-2 h-8 w-8 text-gray-400 hover:text-gray-600"
+                  className="p-1 h-6 w-6 text-gray-400 hover:text-gray-600"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isGenerating}
                 >
-                  <Paperclip size={16} />
+                  <Paperclip size={14} />
                 </Button>
 
                 <Button
@@ -465,12 +451,12 @@ export default function Index() {
                     isGenerating
                   }
                   size="sm"
-                  className="p-2 h-8 w-8 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 disabled:hover:bg-gray-900"
+                  className="p-1 h-6 w-6 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 disabled:hover:bg-gray-900 rounded-full"
                 >
                   {isGenerating ? (
                     <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <Send size={14} className="text-white" />
+                    <Send size={12} className="text-white" />
                   )}
                 </Button>
               </div>
@@ -487,25 +473,6 @@ export default function Index() {
           />
         </div>
       </div>
-
-      {/* Overlay */}
-      {isSidePanelOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsSidePanelOpen(false)}
-          style={{ pointerEvents: 'none' }}
-        >
-          <div
-            className="absolute inset-0"
-            style={{
-              pointerEvents: 'auto',
-              background: 'transparent',
-              marginLeft: '320px' // Width of sidebar (w-80 = 320px)
-            }}
-            onClick={() => setIsSidePanelOpen(false)}
-          />
-        </div>
-      )}
     </div>
   );
 }
