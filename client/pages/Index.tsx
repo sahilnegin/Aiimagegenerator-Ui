@@ -488,10 +488,10 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Overlay for mobile */}
+      {/* Overlay */}
       {isSidePanelOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
           onClick={() => setIsSidePanelOpen(false)}
         />
       )}
