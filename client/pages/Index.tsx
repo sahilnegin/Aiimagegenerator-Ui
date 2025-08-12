@@ -50,16 +50,89 @@ const [charIndex, setCharIndex] = useState(0);
   const [inputText, setInputText] = useState("");
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [threads, setThreads] = useState<Thread[]>([
+
+  // Excel conversation data
+  const excelConversations = [
     {
-      id: "1",
-      title: "New Chat",
-      createdAt: new Date(),
-      messages: [],
-      outputImages: [],
-      isFrozen: false,
+      prompt: "create ad for protein bar without nuts",
+      response: "[{\"shot_number\":1,\"title\":\"Hero Shot\",\"shot_type\":\"hero\",\"shot_description\":\"A sleek, nut-free protein bar rests prominently on a textured rustic wooden surface with an ambient background. The surface is slightly dusted with flour, and the bar is unwrapped to reveal its smooth chocolate coating, free of any nut marks. The camera angle is flat-lay, slightly tilted to highlight the bar's rich texture and handcrafted appearance. The theme is natural and wholesome. The color palette includes earthy browns and soft beige, creating a cozy and inviting feeling.\",\"camera_angle\":\"Flat-lay\",\"camera_motion\":\"Static\"},{\"shot_number\":2,\"title\":\"Macro Shot - Ingredient Focus\",\"shot_type\":\"macro\",\"shot_description\":\"An extreme close-up zooms into the rich layers of the protein bar's chocolate texture, highlighting the absence of nuts, making the smooth, silky surface the hero. Soft, diffused side lighting enhances the creamy texture, and the camera gently tilts to bring a small cocoa nib into focus, suggesting the bar's quality. The theme remains natural and wholesome, maintaining a color palette of rich chocolate brown.\",\"camera_angle\":\"Extreme close-up\",\"camera_motion\":\"Tilt\"},{\"shot_number\":3,\"title\":\"Feature Shot - Nutritional Highlight\",\"shot_type\":\"feature\",\"shot_description\":\"A dynamic shot zooms out from an animated nutritional chart appearing above the bar, highlighting its high protein content and other benefits like being gluten-free and vegan-friendly. The camera is in a medium close-up, capturing the chart dissolving into the bar's realistic image where the wrapper slightly peels to emphasize freshness. The lighting shifts from bright and informative to focus on the warm tones of the bar. The theme stays wholesome, with a palette of greens and browns for a healthy impression.\",\"camera_angle\":\"Medium close-up\",\"camera_motion\":\"Zoom out\"},{\"shot_number\":4,\"title\":\"Interaction Shot - Lifestyle Integration\",\"shot_type\":\"lifestyle\",\"shot_description\":\"A hand reaches for the protein bar from a gym bag alongside a water bottle and towel, suggesting its role in an active lifestyle. The camera captures this in a medium shot with dynamic lighting that emphasizes movement and energy. The background shows a blurred gym environment. The theme is active and energetic, with a color palette of vibrant blues and greens mixed with the warm tones of the bar.\",\"camera_angle\":\"Medium shot\",\"camera_motion\":\"Follow motion\"}]"
     },
-  ]);
+    {
+      prompt: "creat ad for protien bar with lot of nuts and cashews",
+      response: "[{\"shot_number\":1,\"title\":\"Reveal Shot\",\"shot_type\":\"Product\",\"shot_description\":\"A protein bar with visible chunks of nuts and cashews rests on a rustic wooden kitchen countertop with a warm, inviting background. The lighting is soft and natural, coming from a window. The camera angle is slightly overhead. The theme is wholesome and natural, with a color palette of earthy browns and creamy beiges. This shot's purpose is to introduce the product in a friendly, homey setting.\",\"camera_angle\":\"Slightly Overhead\",\"camera_motion\":\"Static Shot\"},{\"shot_number\":2,\"title\":\"Macro Shot\",\"shot_type\":\"Product Detail\",\"shot_description\":\"An extreme close-up focuses on the textured surface of the protein bar, emphasizing the rich, crunchy nuts and creamy cashews embedded within. The lighting is bright and directional to highlight the intricate textures and natural oils glistening. The camera very slowly pans across the surface. The theme continues with a wholesome, earthy color palette.\",\"camera_angle\":\"Macro\",\"camera_motion\":\"Slow Pan\"},{\"shot_number\":3,\"title\":\"Feature Shot\",\"shot_type\":\"Texture\",\"shot_description\":\"The bar is broken in half to reveal a chewy, delicious interior packed with nuts and cashews. The camera captures this in a close-up as pieces crumble slowly, and the lighting highlights the softness amidst the crunch. The theme remains natural and inviting, maintaining a warm color palette throughout.\",\"camera_angle\":\"Close-Up\",\"camera_motion\":\"Slow Motion\"},{\"shot_number\":4,\"title\":\"Hero Shot\",\"shot_type\":\"Product Essence\",\"shot_description\":\"Several protein bars are neatly arranged alongside scattered nuts and cashews, with one bar placed upright to showcase its form amidst the ingredients. The scene is lit by soft, diffused lighting from a nearby window, enhancing the freshness and richness of the ingredients. The color palette focuses on natural, earthy tones. This final shot emphasizes the product's quality and natural ingredients.\",\"camera_angle\":\"Wide Shot\",\"camera_motion\":\"Slow Zoom\"}]"
+    },
+    {
+      prompt: "creat ad for protein bar without wrapper",
+      response: "[{\"shot_number\":1,\"title\":\"Opening Shot\",\"shot_type\":\"Hero Shot\",\"shot_description\":\"A stack of protein bars rest on a polished wooden kitchen counter with a soft natural light before dawn. The surface is glossy and clean, capturing a sense of freshness. Camera angle: Wide angle. Theme: Morning Energy Boost. Colour palette: warm browns and golds.\",\"camera_angle\":\"Wide angle\",\"camera_motion\":\"Static\"},{\"shot_number\":2,\"title\":\"Texture Detail\",\"shot_type\":\"Macro Shot\",\"shot_description\":\"A close-up of the protein bar focuses on the textures of grains and nuts visible on the surface. Soft, diffused light highlights the intricate details and evokes a sense of quality and nutrition. Camera gently pans across the surface to emphasize the craftsmanship. Theme: Artisan Breakfast. Colour palette: Earthy neutrals with highlights.\",\"camera_angle\":\"Close-up\",\"camera_motion\":\"Slow Pan\"},{\"shot_number\":3,\"title\":\"Nutrient Layer\",\"shot_type\":\"Reveal Shot\",\"shot_description\":\"Layers of oats, nuts, and dried fruits are pulled apart in slow motion, revealing each layer meticulously. Each component is shown with detailed focus, glistening in warm light, symbolizing its freshness and nutritional value. Theme: Nutrient Packed Goodness. Colour palette: Rich browns and vibrant natural hues.\",\"camera_angle\":\"Extreme close-up\",\"camera_motion\":\"Slow Pull-out\"},{\"shot_number\":4,\"title\":\"Energy Boost\",\"shot_type\":\"Feature Shot\",\"shot_description\":\"The bar is broken in half, releasing small particles of nuts and grains in mid-air, captured at a high frame rate. This shot highlights its crisp satisfaction and crunchiness, suggesting immediate energy intake. Theme: Quick Nutrition. Colour palette: Bright and energetic golds and browns.\",\"camera_angle\":\"Mid shot\",\"camera_motion\":\"Fast Motion\"},{\"shot_number\":5,\"title\":\"Simplicity Focus\",\"shot_type\":\"Simple Shot\",\"shot_description\":\"The bar is positioned alone on a white, minimalist surface, with subtle shadows creating depth. The lighting is clean and even, highlighting the bar's natural beauty without distractions. Theme: Pure Nutrition. Colour palette: Clean whites and natural bar tones.\",\"camera_angle\":\"Top down\",\"camera_motion\":\"Static\"}]"
+    }
+  ];
+
+  // Function to create threads from Excel data
+  const createThreadsFromExcelData = () => {
+    return excelConversations.map((conv, index) => {
+      const threadId = `excel-${index + 1}`;
+
+      // Parse the JSON response to extract shot descriptions
+      let shotDescriptions: any[] = [];
+      try {
+        shotDescriptions = JSON.parse(conv.response);
+      } catch (e) {
+        console.error('Error parsing shot descriptions:', e);
+      }
+
+      // Create user message
+      const userMessage: Message = {
+        id: `${threadId}-user`,
+        text: conv.prompt,
+        isUser: true,
+        uploadedImages: [],
+        timestamp: new Date(Date.now() - (excelConversations.length - index) * 60000)
+      };
+
+      // Create AI response with shot descriptions
+      const aiMessage: Message = {
+        id: `${threadId}-ai`,
+        text: shotDescriptions.map((shot, idx) =>
+          `**Shot ${shot.shot_number}: ${shot.title}**\n` +
+          `Type: ${shot.shot_type}\n` +
+          `Description: ${shot.shot_description}\n` +
+          `Camera: ${shot.camera_angle} | Motion: ${shot.camera_motion}`
+        ).join('\n\n'),
+        isUser: false,
+        uploadedImages: [],
+        timestamp: new Date(Date.now() - (excelConversations.length - index) * 60000 + 5000)
+      };
+
+      // Generate placeholder images for each shot
+      const outputImages = shotDescriptions.map((_, imgIndex) =>
+        `https://images.unsplash.com/photo-${1500000000000 + threadId.charCodeAt(0) * 1000 + imgIndex}?w=300&h=200&fit=crop&auto=format`
+      );
+
+      return {
+        id: threadId,
+        title: conv.prompt.slice(0, 40) + (conv.prompt.length > 40 ? "..." : ""),
+        messages: [userMessage, aiMessage],
+        outputImages: outputImages,
+        createdAt: new Date(Date.now() - (excelConversations.length - index) * 60000),
+        isFrozen: true
+      };
+    });
+  };
+
+  const [threads, setThreads] = useState<Thread[]>(() => {
+    const excelThreads = createThreadsFromExcelData();
+    return [
+      {
+        id: "1",
+        title: "New Chat",
+        createdAt: new Date(),
+        messages: [],
+        outputImages: [],
+        isFrozen: false,
+      },
+      ...excelThreads
+    ];
+  });
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
