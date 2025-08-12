@@ -411,11 +411,11 @@ export default function Index() {
           <div className="max-w-4xl mx-auto">
             <div
               className={cn(
-                "flex items-end gap-3 bg-white border border-gray-300 rounded-lg p-3 transition-opacity",
+                "relative bg-white border-2 border-gray-300 rounded-xl p-4 transition-opacity",
                 isGenerating && "opacity-50",
               )}
             >
-              <div className="flex-1">
+              <div className="pr-12">
                 <textarea
                   ref={textareaRef}
                   value={inputText}
@@ -427,39 +427,39 @@ export default function Index() {
                       ? "Generating images... Please wait"
                       : "DOG is a smart touch panel, that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives."
                   }
-                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent"
+                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
                   rows={1}
                   disabled={isGenerating}
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-1 h-6 w-6 text-gray-400 hover:text-gray-600"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isGenerating}
-                >
-                  <Paperclip size={14} />
-                </Button>
+              {/* Paperclip icon - bottom left */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute bottom-2 left-2 p-1 h-6 w-6 text-gray-400 hover:text-gray-600"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isGenerating}
+              >
+                <Paperclip size={16} />
+              </Button>
 
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={
-                    (!inputText.trim() && uploadedImages.length === 0) ||
-                    isGenerating
-                  }
-                  size="sm"
-                  className="p-1 h-6 w-6 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 disabled:hover:bg-gray-900 rounded-full"
-                >
-                  {isGenerating ? (
-                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Send size={12} className="text-white" />
-                  )}
-                </Button>
-              </div>
+              {/* Send button - bottom right */}
+              <Button
+                onClick={handleSendMessage}
+                disabled={
+                  (!inputText.trim() && uploadedImages.length === 0) ||
+                  isGenerating
+                }
+                size="sm"
+                className="absolute bottom-2 right-2 p-2 h-8 w-8 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:hover:bg-blue-500 rounded-full border-0"
+              >
+                {isGenerating ? (
+                  <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send size={14} className="text-white" />
+                )}
+              </Button>
             </div>
           </div>
 
