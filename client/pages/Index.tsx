@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, Plus, ChevronLeft, ChevronRight, Upload, Send, X } from "lucide-react";
+import { MessageSquare, Plus, Send, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -13,49 +13,78 @@ interface ChatThread {
 interface ChatMessage {
   id: string;
   text: string;
-  images: string[];
+  isUser: boolean;
+  images?: string[];
   timestamp: Date;
 }
 
 export default function Index() {
-  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-  const [selectedThread, setSelectedThread] = useState<string | null>(null);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedThread, setSelectedThread] = useState<string>("1");
   const [inputText, setInputText] = useState("");
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [threads, setThreads] = useState<ChatThread[]>([
     {
       id: "1",
-      title: "Sample Image Generation",
+      title: "New Chat",
       createdAt: new Date(),
       messages: [
         {
           id: "1",
-          text: "Generate a beautiful sunset landscape",
-          images: [
-            "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop",
-            "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=400&h=300&fit=crop"
-          ],
+          text: "DDG is a smart touchscreen that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives. DDG is a smart touchscreen switch panel that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives. DDG is a smart touchscreen switch panel that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives.",
+          isUser: true,
           timestamp: new Date()
         }
       ]
+    },
+    {
+      id: "2", 
+      title: "Thread 1",
+      createdAt: new Date(),
+      messages: []
+    },
+    {
+      id: "3",
+      title: "Thread 2", 
+      createdAt: new Date(),
+      messages: []
+    },
+    {
+      id: "4",
+      title: "Thread 3",
+      createdAt: new Date(), 
+      messages: []
+    },
+    {
+      id: "5",
+      title: "Thread 4",
+      createdAt: new Date(),
+      messages: []
+    },
+    {
+      id: "6",
+      title: "Thread 5",
+      createdAt: new Date(),
+      messages: []
+    },
+    {
+      id: "7",
+      title: "Thread 6",
+      createdAt: new Date(),
+      messages: []
     }
   ]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const galleryRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const currentThread = threads.find(t => t.id === selectedThread) || threads[0];
-  const currentImages = currentThread?.messages[currentThread.messages.length - 1]?.images || [];
+  const currentThread = threads.find(t => t.id === selectedThread);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    if (threads.length > 0 && !selectedThread) {
-      setSelectedThread(threads[0].id);
-    }
-  }, [threads, selectedThread]);
+    scrollToBottom();
+  }, [currentThread?.messages]);
 
   const adjustTextareaHeight = () => {
     const textarea = textareaRef.current;
@@ -78,275 +107,163 @@ export default function Index() {
   };
 
   const handleSendMessage = () => {
-    if (!inputText.trim() && uploadedImages.length === 0) return;
+    if (!inputText.trim()) return;
     
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       text: inputText,
-      images: [...uploadedImages],
+      isUser: true,
       timestamp: new Date()
     };
 
-    if (currentThread) {
-      setThreads(prevThreads => 
-        prevThreads.map(thread => 
-          thread.id === currentThread.id 
-            ? { ...thread, messages: [...thread.messages, newMessage] }
-            : thread
-        )
-      );
-    }
+    setThreads(prevThreads => 
+      prevThreads.map(thread => 
+        thread.id === selectedThread 
+          ? { ...thread, messages: [...thread.messages, newMessage] }
+          : thread
+      )
+    );
 
     setInputText("");
-    setUploadedImages([]);
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
-  };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (e.target?.result) {
-            setUploadedImages(prev => [...prev, e.target!.result as string]);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  };
+    // Simulate AI response (you can replace this with your actual API call)
+    setTimeout(() => {
+      const aiResponse: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        text: "I understand you're interested in DDG smart touchscreen switches. That sounds like an innovative solution for modern homes. Would you like me to generate some images of what this smart switch panel might look like in different home settings?",
+        isUser: false,
+        timestamp: new Date()
+      };
 
-  const removeUploadedImage = (index: number) => {
-    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+      setThreads(prevThreads => 
+        prevThreads.map(thread => 
+          thread.id === selectedThread 
+            ? { ...thread, messages: [...thread.messages, aiResponse] }
+            : thread
+        )
+      );
+    }, 1000);
   };
 
   const createNewChat = () => {
     const newThread: ChatThread = {
       id: Date.now().toString(),
-      title: `New Chat ${threads.length + 1}`,
+      title: "New Chat",
       messages: [],
       createdAt: new Date()
     };
     setThreads(prev => [newThread, ...prev]);
     setSelectedThread(newThread.id);
-    setIsSidePanelOpen(false);
-  };
-
-  const scrollGallery = (direction: 'left' | 'right') => {
-    if (galleryRef.current) {
-      const scrollAmount = 320;
-      galleryRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
   };
 
   return (
-    <div className="h-screen bg-white flex">
+    <div className="h-screen bg-gray-50 flex">
       {/* Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-80 bg-gray-50 border-r border-gray-200 transition-transform duration-300",
-        isSidePanelOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
-        <div className="flex flex-col h-full">
-          <div className="p-4 border-b border-gray-200">
-            <Button 
-              onClick={createNewChat}
-              className="w-full justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+      <div className="w-64 bg-gray-100 border-r border-gray-200 flex flex-col">
+        {/* New Chat Button */}
+        <div className="p-3 border-b border-gray-200">
+          <Button 
+            onClick={createNewChat}
+            variant="outline"
+            className="w-full justify-start gap-2 text-sm font-normal"
+          >
+            <Plus size={14} />
+            New Chat
+          </Button>
+        </div>
+        
+        {/* Thread List */}
+        <div className="flex-1 overflow-y-auto">
+          {threads.map((thread) => (
+            <div
+              key={thread.id}
+              onClick={() => setSelectedThread(thread.id)}
+              className={cn(
+                "px-3 py-2 mx-2 my-1 rounded cursor-pointer text-sm transition-colors",
+                selectedThread === thread.id 
+                  ? "bg-gray-200" 
+                  : "hover:bg-gray-200"
+              )}
             >
-              <Plus size={16} />
-              New Chat
-            </Button>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-2">
-              {threads.map((thread) => (
-                <div
-                  key={thread.id}
-                  onClick={() => {
-                    setSelectedThread(thread.id);
-                    setIsSidePanelOpen(false);
-                  }}
-                  className={cn(
-                    "p-3 rounded-lg cursor-pointer transition-colors",
-                    selectedThread === thread.id 
-                      ? "bg-blue-100 border border-blue-200" 
-                      : "hover:bg-gray-100"
-                  )}
-                >
-                  <div className="font-medium text-sm text-gray-900 truncate">
-                    {thread.title}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {thread.messages.length} messages
-                  </div>
-                </div>
-              ))}
+              <div className="truncate text-gray-700">
+                {thread.title}
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col bg-white">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsSidePanelOpen(true)}
-            className="gap-2"
-          >
-            <MessageSquare size={16} />
-            Chat
-          </Button>
-          <h1 className="font-semibold text-gray-900">AI Image Generator</h1>
-          <div className="w-16" />
+        <div className="h-14 border-b border-gray-200 flex items-center justify-center">
+          <h1 className="font-medium text-gray-900">ChatGPT</h1>
         </div>
 
-        {/* Image Gallery */}
-        {currentImages.length > 0 && (
-          <div className="relative bg-gray-50 border-b border-gray-200">
-            <div className="p-6">
-              <div className="relative">
-                {currentImages.length > 4 && (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white"
-                      onClick={() => scrollGallery('left')}
-                    >
-                      <ChevronLeft size={16} />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white"
-                      onClick={() => scrollGallery('right')}
-                    >
-                      <ChevronRight size={16} />
-                    </Button>
-                  </>
-                )}
-                
-                <div 
-                  ref={galleryRef}
-                  className="flex gap-4 overflow-x-auto scrollbar-hide"
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {currentThread?.messages.map((message) => (
+            <div key={message.id} className="flex">
+              <div className="flex-1 max-w-3xl">
+                <div
+                  className={cn(
+                    "p-4 rounded-lg",
+                    message.isUser 
+                      ? "bg-blue-500 text-white ml-auto max-w-2xl" 
+                      : "bg-gray-100 text-gray-900"
+                  )}
                 >
-                  {currentImages.map((image, index) => (
-                    <div 
-                      key={index}
-                      className={cn(
-                        "flex-shrink-0 cursor-pointer transition-all duration-200",
-                        selectedImageIndex === index && "ring-2 ring-gray-400"
-                      )}
-                      onClick={() => setSelectedImageIndex(selectedImageIndex === index ? null : index)}
-                    >
-                      <img
-                        src={image}
-                        alt={`Generated image ${index + 1}`}
-                        className="w-72 h-56 object-cover rounded-lg"
-                      />
-                    </div>
-                  ))}
+                  <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                    {message.text}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Selected Image Large View */}
-        {selectedImageIndex !== null && currentImages[selectedImageIndex] && (
-          <div className="flex-1 flex items-center justify-center bg-gray-50 p-8">
-            <div className="relative max-w-4xl max-h-full">
-              <img
-                src={currentImages[selectedImageIndex]}
-                alt="Selected image"
-                className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
-              />
-            </div>
-          </div>
-        )}
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
 
         {/* Input Area */}
-        <div className="p-6 border-t border-gray-200 bg-white">
-          {uploadedImages.length > 0 && (
-            <div className="mb-4 flex gap-2 flex-wrap">
-              {uploadedImages.map((image, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={image}
-                    alt={`Upload ${index + 1}`}
-                    className="w-16 h-16 object-cover rounded border"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full"
-                    onClick={() => removeUploadedImage(index)}
-                  >
-                    <X size={12} />
-                  </Button>
-                </div>
-              ))}
+        <div className="border-t border-gray-200 p-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="flex items-end gap-3 bg-white border border-gray-300 rounded-lg overflow-hidden">
+              <div className="flex-1 relative">
+                <textarea
+                  ref={textareaRef}
+                  value={inputText}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Send a message..."
+                  className="w-full resize-none border-0 px-4 py-3 focus:outline-none focus:ring-0 text-sm min-h-[48px] max-h-48"
+                  rows={1}
+                />
+              </div>
+              
+              <div className="flex items-center gap-2 px-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 h-8 w-8 text-gray-400 hover:text-gray-600"
+                >
+                  <Paperclip size={16} />
+                </Button>
+                
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={!inputText.trim()}
+                  size="sm"
+                  className="p-2 h-8 w-8 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 disabled:hover:bg-gray-900"
+                >
+                  <Send size={14} className="text-white" />
+                </Button>
+              </div>
             </div>
-          )}
-          
-          <div className="flex items-end gap-3">
-            <div className="flex-1 relative">
-              <textarea
-                ref={textareaRef}
-                value={inputText}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                placeholder="Describe the image you want to generate..."
-                className="w-full resize-none border border-gray-300 rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-h-48 min-h-[48px]"
-                rows={1}
-                title={inputText}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-2 bottom-2 p-1 h-8 w-8 text-gray-400 hover:text-gray-600"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload size={16} />
-              </Button>
-            </div>
-            
-            <Button
-              onClick={handleSendMessage}
-              disabled={!inputText.trim() && uploadedImages.length === 0}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 px-4 py-3"
-            >
-              <Send size={16} />
-            </Button>
           </div>
-          
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
         </div>
       </div>
-
-      {/* Overlay for mobile */}
-      {isSidePanelOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsSidePanelOpen(false)}
-        />
-      )}
     </div>
   );
 }
