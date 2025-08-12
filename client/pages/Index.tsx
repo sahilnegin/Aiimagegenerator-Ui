@@ -422,7 +422,7 @@ export default function Index() {
             <div
               className={cn(
                 "relative bg-white border-2 border-gray-300 rounded-xl p-4 transition-opacity",
-                (isGenerating || isFrozen) && "opacity-50",
+                (isGenerating || currentThread?.isFrozen) && "opacity-50",
               )}
             >
               <div className="pr-20">
