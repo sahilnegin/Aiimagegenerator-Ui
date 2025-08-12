@@ -245,17 +245,12 @@ export default function Index() {
       </div>
 
       {/* Main Content */}
-      <div
-        className={cn(
-          "flex-1 bg-white flex flex-col transition-all duration-300 ease-in-out",
-          !sidebarOpen && "ml-0",
-        )}
-      >
+      <div className="flex-1 bg-white flex flex-col">
         {/* Image Gallery at Top */}
         <div className="h-32 bg-gray-50 border-b border-gray-200 p-4">
           {currentThread?.outputImages &&
           currentThread.outputImages.length > 0 ? (
-            <div className="relative h-full">
+            <div className="relative h-full flex justify-center">
               {currentThread.outputImages.length > 6 && (
                 <>
                   <button
@@ -275,7 +270,7 @@ export default function Index() {
 
               <div
                 ref={galleryRef}
-                className="flex gap-3 overflow-x-auto scrollbar-hide h-full"
+                className="flex gap-3 overflow-x-auto scrollbar-hide h-full justify-center"
               >
                 {currentThread.outputImages.map((image, index) => (
                   <div
