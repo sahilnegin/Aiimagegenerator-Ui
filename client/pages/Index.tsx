@@ -323,13 +323,8 @@ export default function Index() {
             generatedImages = result.images;
           } else if (result.imageUrls && Array.isArray(result.imageUrls)) {
             generatedImages = result.imageUrls;
-          } else {
-            // Fallback to demo images if no images in response
-            generatedImages = [
-              "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
-              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
-            ];
           }
+          // No fallback images - only show what the API returns
         }
 
         setThreads((prevThreads) =>
@@ -337,7 +332,7 @@ export default function Index() {
             thread.id === selectedThread
               ? {
                   ...thread,
-                  outputImages: generatedImages,
+                  outputImages: generatedImages, // Will be empty array if no images from API
                 }
               : thread,
           ),
