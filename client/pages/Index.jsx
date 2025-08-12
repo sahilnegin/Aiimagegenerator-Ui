@@ -202,25 +202,8 @@ export default function Index() {
 
   return (
     <div className="h-screen bg-gray-100 flex">
-      {/* Sidebar Toggle Button */}
-      <button
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed top-4 left-4 z-50 p-2 bg-white rounded border border-gray-300 hover:bg-gray-50 transition-colors"
-      >
-        {sidebarOpen ? (
-          <X size={16} className="text-black" />
-        ) : (
-          <Menu size={16} className="text-black" />
-        )}
-      </button>
-
       {/* Sidebar */}
-      <div
-        className={cn(
-          "w-60 bg-gray-200 flex flex-col transition-transform duration-300 ease-in-out z-40",
-          !sidebarOpen && "-translate-x-full",
-        )}
-      >
+      <div className="w-60 bg-gray-200 flex flex-col z-40">
         {/* Chat Icon */}
         <div className="p-4 pt-16">
           <div className="w-8 h-8 bg-white rounded border border-gray-300 flex items-center justify-center">
