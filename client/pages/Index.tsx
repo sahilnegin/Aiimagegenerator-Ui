@@ -443,7 +443,7 @@ export default function Index() {
               <button
                 className="absolute bottom-2 left-2 p-1 h-6 w-6 text-gray-400 hover:text-gray-600"
                 onClick={() => fileInputRef.current?.click()}
-                disabled={isGenerating || isFrozen}
+                disabled={isGenerating || currentThread?.isFrozen}
               >
                 <Paperclip size={16} />
               </button>
