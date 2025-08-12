@@ -177,14 +177,29 @@ export default function Index() {
                 <div
                   className={cn(
                     "p-4 rounded-lg",
-                    message.isUser 
-                      ? "bg-blue-500 text-white ml-auto max-w-2xl" 
+                    message.isUser
+                      ? "bg-blue-500 text-white ml-auto max-w-2xl"
                       : "bg-gray-100 text-gray-900"
                   )}
                 >
                   <div className="whitespace-pre-wrap text-sm leading-relaxed">
                     {message.text}
                   </div>
+
+                  {/* Display images if present */}
+                  {message.images && message.images.length > 0 && (
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      {message.images.map((image, index) => (
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`Generated image ${index + 1}`}
+                          className="w-full h-48 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => window.open(image, '_blank')}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
