@@ -25,6 +25,7 @@ export default function Index() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [inputText, setInputText] = useState("");
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [threads, setThreads] = useState<ChatThread[]>([
     {
       id: "1",
