@@ -395,7 +395,10 @@ export default function Index() {
           )}
           
           <div className="max-w-3xl mx-auto">
-            <div className="flex items-end gap-3 bg-white border border-gray-300 rounded-lg overflow-hidden">
+            <div className={cn(
+              "flex items-end gap-3 bg-white border border-gray-300 rounded-lg overflow-hidden transition-opacity",
+              isGenerating && "opacity-50"
+            )}>
               <div className="flex-1 relative">
                 <textarea
                   ref={textareaRef}
@@ -403,29 +406,35 @@ export default function Index() {
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   onPaste={handlePaste}
-                  placeholder="Describe the image you want to generate... (Ctrl+V to paste images)"
+                  placeholder={isGenerating ? "Generating images... Please wait" : "Describe the image you want to generate... (Ctrl+V to paste images)"}
                   className="w-full resize-none border-0 px-4 py-3 focus:outline-none focus:ring-0 text-sm min-h-[48px] max-h-48"
                   rows={1}
+                  disabled={isGenerating}
                 />
               </div>
-              
+
               <div className="flex items-center gap-2 px-3">
                 <Button
                   variant="ghost"
                   size="sm"
                   className="p-2 h-8 w-8 text-gray-400 hover:text-gray-600"
                   onClick={() => fileInputRef.current?.click()}
+                  disabled={isGenerating}
                 >
                   <Paperclip size={16} />
                 </Button>
-                
+
                 <Button
                   onClick={handleSendMessage}
-                  disabled={!inputText.trim() && uploadedImages.length === 0}
+                  disabled={(!inputText.trim() && uploadedImages.length === 0) || isGenerating}
                   size="sm"
                   className="p-2 h-8 w-8 bg-gray-900 hover:bg-gray-800 disabled:opacity-50 disabled:hover:bg-gray-900"
                 >
-                  <Send size={14} className="text-white" />
+                  {isGenerating ? (
+                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send size={14} className="text-white" />
+                  )}
                 </Button>
               </div>
             </div>
