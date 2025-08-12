@@ -143,9 +143,22 @@ export default function Index() {
 
     // Simulate AI response with generated images
     setTimeout(() => {
+      // Generate dynamic response based on user input
+      const generateResponseText = (userInput: string) => {
+        if (userInput.toLowerCase().includes('dog')) {
+          return `I've created images for the DOG smart touch panel concept. These visuals showcase a modern, sleek design that would appeal to urban homeowners seeking luxury and convenience. The panels feature intuitive touch interfaces and premium finishes that would integrate beautifully into contemporary home environments.`;
+        } else if (userInput.toLowerCase().includes('home') || userInput.toLowerCase().includes('smart')) {
+          return `I've generated images that capture the essence of modern smart home technology. These designs emphasize clean lines, user-friendly interfaces, and premium materials that align with contemporary home automation trends.`;
+        } else if (userInput.toLowerCase().includes('luxury') || userInput.toLowerCase().includes('premium')) {
+          return `I've created images that embody luxury and sophistication. These designs feature high-end finishes, elegant aesthetics, and premium materials that would appeal to discerning customers who value quality and style.`;
+        } else {
+          return `I've generated images based on your prompt: "${userInput.slice(0, 50)}${userInput.length > 50 ? '...' : ''}". These visuals interpret your concept with modern design principles, focusing on usability and aesthetic appeal.`;
+        }
+      };
+
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I've generated some images based on your prompt. You can see them in the gallery above.",
+        text: generateResponseText(newMessage.text),
         isUser: false,
         timestamp: new Date(),
       };
