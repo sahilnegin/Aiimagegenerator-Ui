@@ -450,6 +450,12 @@ useEffect(() => {
                       src={image}
                       alt={`Generated image ${index + 1}`}
                       className="h-full w-24 object-cover rounded bg-gray-200"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (target.src !== getFallbackImage(index, currentThread?.title || '')) {
+                          target.src = getFallbackImage(index, currentThread?.title || '');
+                        }
+                      }}
                     />
                   </div>
                 ))}
