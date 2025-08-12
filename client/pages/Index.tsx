@@ -160,7 +160,6 @@ export default function Index() {
           thread.id === selectedThread
             ? {
                 ...thread,
-                messages: [...thread.messages, aiResponse],
                 outputImages: generatedImages,
               }
             : thread,
