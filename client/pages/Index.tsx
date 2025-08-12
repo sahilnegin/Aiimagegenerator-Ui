@@ -90,14 +90,19 @@ export default function Index() {
     setTimeout(() => {
       const aiResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        text: "I understand you're interested in DDG smart touchscreen switches. That sounds like an innovative solution for modern homes. Would you like me to generate some images of what this smart switch panel might look like in different home settings?",
+        text: "I'll generate some images based on your prompt. Please wait a moment...",
         isUser: false,
+        images: [
+          "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop",
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+          "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop"
+        ],
         timestamp: new Date()
       };
 
-      setThreads(prevThreads => 
-        prevThreads.map(thread => 
-          thread.id === selectedThread 
+      setThreads(prevThreads =>
+        prevThreads.map(thread =>
+          thread.id === selectedThread
             ? { ...thread, messages: [...thread.messages, aiResponse] }
             : thread
         )
