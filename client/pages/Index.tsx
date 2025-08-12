@@ -467,7 +467,25 @@ useEffect(() => {
                       )}
                     >
                       <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-normal">
-                        {message.text}
+                        {message.text.includes('**Shot ') ? (
+                          // Format shot descriptions with better styling
+                          <div className="space-y-4">
+                            {message.text.split('\n\n').map((shot, index) => (
+                              <div key={index} className="border-l-4 border-blue-400 pl-3 py-2 bg-blue-50/50 rounded-r">
+                                <div dangerouslySetInnerHTML={{
+                                  __html: shot
+                                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-blue-700">$1</strong>')
+                                    .replace(/Type: (.*?)(?=\n|$)/g, '<div class="text-sm text-gray-600 mt-1"><span class="font-medium">Type:</span> $1</div>')
+                                    .replace(/Camera: (.*?)(?=\n|$)/g, '<div class="text-sm text-gray-600"><span class="font-medium">Camera:</span> $1</div>')
+                                    .replace(/Description: (.*?)(?=\n|$)/g, '<div class="text-gray-700 mt-1">$1</div>')
+                                    .replace(/\n/g, '<br>')
+                                }} />
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          message.text
+                        )}
                       </div>
 
                       {message.uploadedImages &&
