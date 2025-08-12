@@ -428,7 +428,7 @@ export default function Index() {
                   onKeyDown={handleKeyDown}
                   onPaste={handlePaste}
                   placeholder="DOG is a smart touch panel, that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives."
-                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
+                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-[15px] min-h-[20px] max-h-48 bg-transparent text-gray-700 placeholder-gray-400 font-normal leading-relaxed"
                   rows={1}
                   disabled={isGenerating}
                 />
