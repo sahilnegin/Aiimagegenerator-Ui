@@ -1,0 +1,60 @@
+[
+  [
+    "Input Prompt",
+    "Agent Output",
+    "Image Link"
+  ],
+  [
+    "create ad for protein bar without nuts",
+    "[{\"shot_number\":1,\"title\":\"Hero Shot\",\"shot_type\":\"hero\",\"shot_description\":\"A sleek, nut-free protein bar rests prominently on a textured rustic wooden surface with an ambient background. The surface is slightly dusted with flour, and the bar is unwrapped to reveal its smooth chocolate coating, free of any nut marks. The camera angle is flat-lay, slightly tilted to highlight the bar’s rich texture and handcrafted appearance. The theme is natural and wholesome. The color palette includes earthy browns and soft beige, creating a cozy and inviting feeling.\",\"camera_angle\":\"Flat-lay\",\"camera_motion\":\"Static\"},{\"shot_number\":2,\"title\":\"Macro Shot - Ingredient Focus\",\"shot_type\":\"macro\",\"shot_description\":\"An extreme close-up zooms into the rich layers of the protein bar's chocolate texture, highlighting the absence of nuts, making the smooth, silky surface the hero. Soft, diffused side lighting enhances the creamy texture, and the camera gently tilts to bring a small cocoa nib into focus, suggesting the bar's quality. The theme remains natural and wholesome, maintaining a color palette of rich chocolate brown.\",\"camera_angle\":\"Extreme close-up\",\"camera_motion\":\"Tilt\"},{\"shot_number\":3,\"title\":\"Feature Shot - Nutritional Highlight\",\"shot_type\":\"feature\",\"shot_description\":\"A dynamic shot zooms out from an animated nutritional chart appearing above the bar, highlighting its high protein content and other benefits like being gluten-free and vegan-friendly. The camera is in a medium close-up, capturing the chart dissolving into the bar's realistic image where the wrapper slightly peels to emphasize freshness. The lighting shifts from bright and informative to focus on the warm tones of the bar. The theme stays wholesome, with a palette of greens and browns for a healthy impression.\",\"camera_angle\":\"Medium close-up\",\"camera_motion\":\"Zoom out\"},{\"shot_number\":4,\"title\":\"Interaction Shot - Lifestyle Integration\",\"shot_type\":\"interaction\",\"shot_description\":\"A user seamlessly grabs the protein bar from a gym bag, juxtaposed against a dimly lit, energetic gym environment. The shot shows the bar being unwrapped and the user taking a deliberate, satisfying bite as they glance at their fitness tracker. The camera follows the user's motion, illustrating the ease and practicality of incorporating the bar into fitness routines. The theme is active lifestyle, with colors focusing on lively blue and energetic orange accents to match active living habits.\",\"camera_angle\":\"Eye-level\",\"camera_motion\":\"Tracking\"},{\"shot_number\":5,\"title\":\"Packaging Shot - Unwrapping Experience\",\"shot_type\":\"packaging\",\"shot_description\":\"The camera captures a slow-motion shot of hands unwrapping the protein bar from its eco-friendly, recyclable wrapper. The focus is on the crisp sound of the wrapper gently tearing, with the camera zooming in on the bar’s texture as it’s revealed. Natural light highlights the clean, modern lines of the packaging, evoking an impression of modernity and sustainability. The color palette is green and white, reinforcing the environmentally-friendly aspect.\",\"camera_angle\":\"Close-up\",\"camera_motion\":\"Slow push-in\"},{\"shot_number\":6,\"title\":\"Silhouette Shot\",\"shot_type\":\"silhouette\",\"shot_description\":\"The bar is portrayed as a dark silhouette against a bright and clean kitchen background during a transitional shot. The shape of the bar is sharply defined, avoiding any detail except its smooth, nut-free exterior, adding a mysterious allure before a full reveal. The theme is minimalist and modern, with a monochromatic palette punctuated by soft grey shadows to emphasize shape over detail.\",\"camera_angle\":\"Side profile\",\"camera_motion\":\"Slow dolly\"},{\"shot_number\":7,\"title\":\"Abstract Shot - Taste Inspiration\",\"shot_type\":\"abstract\",\"shot_description\":\"A dramatic close-up shows a slow cascade of rich, molten chocolate pouring and enveloping cocoa nibs, symbolizing the indulgent yet healthy nature of the protein bar's chocolate coating. The lighting is soft, creating intense highlights on the chocolate’s surface, focusing entirely on the texture and movement, rather than the product itself. Color palette includes deep brown and soft gold accents, enhancing the luxurious appeal of chocolate.\",\"camera_angle\":\"Extreme close-up\",\"camera_motion\":\"Slow motion pan\"}]"
+  ],
+  [
+    "creat ad for protien bar with lot of nuts and cashews",
+    "[{\"shot_number\":1,\"title\":\"Reveal Shot\",\"shot_type\":\"Product\",\"shot_description\":\"A protein bar with visible chunks of nuts and cashews rests on a rustic wooden kitchen countertop with a warm, inviting background. The lighting is soft and natural, coming from a window. The camera angle is slightly overhead. The theme is wholesome and natural, with a color palette of earthy browns and creamy beiges. This shot's purpose is to introduce the product in a friendly, homey setting.\",\"camera_angle\":\"Slightly Overhead\",\"camera_motion\":\"Static Shot\"},{\"shot_number\":2,\"title\":\"Macro Shot\",\"shot_type\":\"Product Detail\",\"shot_description\":\"An extreme close-up focuses on the textured surface of the protein bar, emphasizing the rich, crunchy nuts and creamy cashews embedded within. The lighting is bright and directional to highlight the intricate textures and natural oils glistening. The camera very slowly pans across the surface. The theme continues with a wholesome, earthy color palette.\",\"camera_angle\":\"Macro\",\"camera_motion\":\"Slow Pan\"},{\"shot_number\":3,\"title\":\"Feature Shot\",\"shot_type\":\"Texture\",\"shot_description\":\"The bar is broken in half to reveal a chewy, delicious interior packed with nuts and cashews. The camera captures this in a close-up as pieces crumble slowly, and the lighting highlights the softness amidst the crunch. The theme remains natural and inviting, maintaining a warm color palette throughout.\",\"camera_angle\":\"Close-Up\",\"camera_motion\":\"Slow Motion\"},{\"shot_number\":4,\"title\":\"Hero Shot\",\"shot_type\":\"Product Essence\",\"shot_description\":\"Several protein bars are neatly arranged alongside scattered nuts and cashews, with one bar placed upright to showcase its form amidst the ingredients. The scene is lit by soft, diffused lighting from a nearby window, enhancing the freshness and richness of the ingredients. The color palette focuses on natural, earthy tones. This final shot epitomizes the bar's healthy ingredients in a natural, inviting setting.\",\"camera_angle\":\"Eye-Level\",\"camera_motion\":\"Static Shot\"}]"
+  ],
+  [
+    "creat ad for protein bar without wrapper",
+    "[{\"shot_number\":1,\"title\":\"Opening Shot\",\"shot_type\":\"Hero Shot\",\"shot_description\":\"A stack of protein bars rest on a polished wooden kitchen counter with a soft natural light before dawn. The surface is glossy and clean, capturing a sense of freshness. Camera angle: Wide angle. Theme: Morning Energy Boost. Colour palette: warm browns and golds.\",\"camera_angle\":\"Wide angle\",\"camera_motion\":\"Static\"},{\"shot_number\":2,\"title\":\"Texture Detail\",\"shot_type\":\"Macro Shot\",\"shot_description\":\"A close-up of the protein bar focuses on the textures of grains and nuts visible on the surface. Soft, diffused light highlights the intricate details and evokes a sense of quality and nutrition. Camera gently pans across the surface to emphasize the craftsmanship. Theme: Artisan Breakfast. Colour palette: Earthy neutrals with highlights.\",\"camera_angle\":\"Close-up\",\"camera_motion\":\"Slow Pan\"},{\"shot_number\":3,\"title\":\"Nutrient Layer\",\"shot_type\":\"Reveal Shot\",\"shot_description\":\"Layers of oats, nuts, and dried fruits are pulled apart in slow motion, revealing each layer meticulously. Each component is shown with detailed focus, glistening in warm light, symbolizing its freshness and nutritional value. Theme: Nutrient Packed Goodness. Colour palette: Rich browns and vibrant natural hues.\",\"camera_angle\":\"Extreme close-up\",\"camera_motion\":\"Slow Pull-out\"},{\"shot_number\":4,\"title\":\"Energy Boost\",\"shot_type\":\"Feature Shot\",\"shot_description\":\"The bar is broken in half, releasing small particles of nuts and grains in mid-air, captured at a high frame rate. This shot highlights its crisp satisfaction and crunchiness, suggesting immediate energy intake. Theme: Quick Nutrition. Colour palette: Bright and energetic golds and browns.\",\"camera_angle\":\"Mid shot\",\"camera_motion\":\"Fast Motion\"},{\"shot_number\":5,\"title\":\"Simplicity Focus\",\"shot_type\":\"Simple Shot\",\"shot_description\":\"The bar is placed singularly on the counter with sunlight streaming in, creating a seamless shadow. The simplicity of the bare bar emphasizes its natural, wholesome ingredients. Theme: Pure, Uncomplicated Energy. Colour palette: Soft whites and creams highlighting the contrast with the bar's texture.\",\"camera_angle\":\"Eye-Level\",\"camera_motion\":\"Static\"},{\"shot_number\":6,\"title\":\"Essence of Energy\",\"shot_type\":\"Abstract Shot\",\"shot_description\":\"Extreme close-up of a honey glaze on the bar as it catches the light, creating a shimmering effect. It blurs the boundaries between light and substance, focusing on the smooth curve and golden color of the glaze. Theme: Vitality in Each Bite. Colour palette: Honey golds transitioning into warm whites.\",\"camera_angle\":\"Extreme close-up\",\"camera_motion\":\"Slow Orbit\"}]"
+  ],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  [],
+  []
+]
