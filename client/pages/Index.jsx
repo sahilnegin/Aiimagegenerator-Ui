@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Send, Paperclip } from "lucide-react";
 
 export default function Index() {
   const [selectedThread, setSelectedThread] = useState("1");
+  const [inputText, setInputText] = useState("DOG is a smart touch panel, that replaces traditional switches. It is targeted towards urban home owners who are looking for");
   const [threads, setThreads] = useState([
     {
       id: "1",
@@ -61,17 +62,46 @@ export default function Index() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-white">
-        {/* Content Grid */}
-        <div className="h-full p-6">
-          <div className="grid grid-cols-4 gap-4 h-full">
-            {/* Empty placeholders matching the design */}
+      <div className="flex-1 bg-white flex flex-col">
+        {/* Image Gallery Placeholders at Top */}
+        <div className="h-32 bg-gray-50 border-b border-gray-200 p-4">
+          <div className="flex gap-3 h-full">
             {Array.from({ length: 8 }).map((_, index) => (
               <div
                 key={index}
-                className="bg-gray-200 rounded-lg aspect-square"
+                className="flex-shrink-0 h-full w-24 bg-gray-200 rounded"
               />
             ))}
+          </div>
+        </div>
+
+        {/* Empty center area */}
+        <div className="flex-1"></div>
+
+        {/* Input Area at Bottom */}
+        <div className="border-t border-gray-200 p-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative bg-white border-2 border-gray-300 rounded-xl p-4">
+              <div className="pr-20">
+                <textarea
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="DOG is a smart touch panel, that replaces traditional switches. It is targeted towards urban home owners who are looking for"
+                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
+                  rows={1}
+                />
+              </div>
+
+              {/* Paperclip icon - bottom left */}
+              <button className="absolute bottom-2 left-2 p-1 h-6 w-6 text-gray-400 hover:text-gray-600">
+                <Paperclip size={16} />
+              </button>
+
+              {/* Send button - bottom right */}
+              <button className="absolute bottom-2 right-2 p-2 h-8 w-8 bg-blue-500 hover:bg-blue-600 rounded-full border-0 flex items-center justify-center">
+                <Send size={14} className="text-white" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
