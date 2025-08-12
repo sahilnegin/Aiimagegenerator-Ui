@@ -25,7 +25,23 @@ interface Thread {
   createdAt: Date;
 }
 
+
 export default function Index() {
+  const prompts = [
+  "Generate a modern smart touch panel UI design.",
+  "Show me a luxury home automation setup.",
+  "Create images of futuristic urban living spaces.",
+  "Design a minimalist touch switch interface.",
+  "Visualize smart home convenience features.",
+  "Illustrate a smart panel replacing traditional switches.",
+  "Concept art for a high-tech smart home control panel.",
+  "Render a user-friendly smart touch panel layout."
+];
+
+const [placeholderText, setPlaceholderText] = useState("");
+const [promptIndex, setPromptIndex] = useState(0);
+const [charIndex, setCharIndex] = useState(0);
+
   const [selectedThread, setSelectedThread] = useState("1");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null,
@@ -218,6 +234,27 @@ export default function Index() {
       });
     }
   };
+useEffect(() => {
+  if (isGenerating) return;
+
+  const currentPrompt = prompts[promptIndex];
+  if (charIndex < currentPrompt.length) {
+    const timeout = setTimeout(() => {
+      setPlaceholderText((prev) => prev + currentPrompt.charAt(charIndex));
+      setCharIndex(charIndex + 1);
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  } else {
+    const timeout = setTimeout(() => {
+      setPlaceholderText("");
+      setCharIndex(0);
+      setPromptIndex((promptIndex + 1) % prompts.length);
+    }, 2000);
+
+    return () => clearTimeout(timeout);
+  }
+}, [charIndex, promptIndex, isGenerating]);
 
   return (
     <div className="h-screen bg-gray-100 flex">
@@ -434,7 +471,7 @@ export default function Index() {
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   onPaste={handlePaste}
-                  placeholder="DOG is a smart touch panel, that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives."
+                  placeholder={placeholderText || "Start typing your prompt here..."}
                   className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
                   rows={1}
                   disabled={isGenerating}
