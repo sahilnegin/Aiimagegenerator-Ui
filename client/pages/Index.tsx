@@ -94,7 +94,10 @@ export default function Index() {
 
   const handleSendMessage = () => {
     if (!inputText.trim() && uploadedImages.length === 0) return;
-    
+    if (isGenerating) return; // Prevent sending while generating
+
+    setIsGenerating(true);
+
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       text: inputText,
@@ -103,11 +106,11 @@ export default function Index() {
       timestamp: new Date()
     };
 
-    setThreads(prevThreads => 
-      prevThreads.map(thread => 
-        thread.id === selectedThread 
-          ? { 
-              ...thread, 
+    setThreads(prevThreads =>
+      prevThreads.map(thread =>
+        thread.id === selectedThread
+          ? {
+              ...thread,
               messages: [...thread.messages, newMessage],
               title: thread.messages.length === 0 ? inputText.slice(0, 30) + (inputText.length > 30 ? '...' : '') : thread.title
             }
@@ -138,18 +141,20 @@ export default function Index() {
         "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=400&h=300&fit=crop"
       ];
 
-      setThreads(prevThreads => 
-        prevThreads.map(thread => 
-          thread.id === selectedThread 
-            ? { 
-                ...thread, 
+      setThreads(prevThreads =>
+        prevThreads.map(thread =>
+          thread.id === selectedThread
+            ? {
+                ...thread,
                 messages: [...thread.messages, aiResponse],
                 outputImages: generatedImages
               }
             : thread
         )
       );
-    }, 1000);
+
+      setIsGenerating(false); // Re-enable input after generation
+    }, 3000); // Increased to 3 seconds to simulate real generation time
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
