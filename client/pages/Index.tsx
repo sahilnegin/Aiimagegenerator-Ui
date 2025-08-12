@@ -219,24 +219,22 @@ export default function Index() {
   return (
     <div className="h-screen bg-gray-100 flex">
       {/* Always Visible Sidebar */}
-      <div className="w-40 bg-white border-2 border-blue-400 flex flex-col">
+      <div className="w-40 bg-gray-200 flex flex-col">
         {/* Chat Icon */}
-        <div className="p-3 border-b border-gray-200">
-          <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
-            <MessageSquare size={16} className="text-white" />
+        <div className="p-3">
+          <div className="w-8 h-8 bg-white rounded border border-gray-300 flex items-center justify-center">
+            <MessageSquare size={16} className="text-black" />
           </div>
         </div>
 
         {/* New Chat Button */}
-        <div className="p-3 border-b border-gray-200">
-          <Button
+        <div className="px-3 pb-2">
+          <button
             onClick={createNewChat}
-            variant="outline"
-            className="w-full justify-start text-xs h-8 px-2"
+            className="w-full text-left text-sm font-medium text-gray-800 hover:text-black transition-colors"
           >
-            <Plus size={12} className="mr-1" />
             New Chat
-          </Button>
+          </button>
         </div>
 
         {/* Thread List */}
@@ -249,14 +247,14 @@ export default function Index() {
                 setSelectedImageIndex(null);
               }}
               className={cn(
-                "px-3 py-2 text-xs cursor-pointer transition-colors border-b border-gray-100",
+                "px-3 py-1 text-sm cursor-pointer transition-colors",
                 selectedThread === thread.id
-                  ? "bg-blue-50 border-l-2 border-l-blue-500"
-                  : "hover:bg-gray-50",
+                  ? "text-black font-medium"
+                  : "text-gray-600 hover:text-gray-800",
               )}
               title={thread.messages[0]?.text || "New Chat"}
             >
-              <div className="truncate text-gray-700">{thread.title}</div>
+              <div className="truncate">{thread.title}</div>
             </div>
           ))}
         </div>
