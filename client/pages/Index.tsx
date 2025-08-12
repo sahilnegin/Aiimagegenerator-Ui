@@ -26,22 +26,21 @@ interface Thread {
   isFrozen: boolean;
 }
 
-
 export default function Index() {
   const prompts = [
-  "Generate a modern smart touch panel UI design.",
-  "Show me a luxury home automation setup.",
-  "Create images of futuristic urban living spaces.",
-  "Design a minimalist touch switch interface.",
-  "Visualize smart home convenience features.",
-  "Illustrate a smart panel replacing traditional switches.",
-  "Concept art for a high-tech smart home control panel.",
-  "Render a user-friendly smart touch panel layout."
-];
+    "Generate a modern smart touch panel UI design.",
+    "Show me a luxury home automation setup.",
+    "Create images of futuristic urban living spaces.",
+    "Design a minimalist touch switch interface.",
+    "Visualize smart home convenience features.",
+    "Illustrate a smart panel replacing traditional switches.",
+    "Concept art for a high-tech smart home control panel.",
+    "Render a user-friendly smart touch panel layout.",
+  ];
 
-const [placeholderText, setPlaceholderText] = useState("");
-const [promptIndex, setPromptIndex] = useState(0);
-const [charIndex, setCharIndex] = useState(0);
+  const [placeholderText, setPlaceholderText] = useState("");
+  const [promptIndex, setPromptIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
 
   const [selectedThread, setSelectedThread] = useState("excel-new-1");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
@@ -55,29 +54,46 @@ const [charIndex, setCharIndex] = useState(0);
   const excelConversations = [
     {
       prompt: "protein bar with green inside\n\ncreate only 3 shot",
-      response: "[{\"shot_number\":1,\"title\":\"Reveal Shot\",\"shot_type\":\"Reveal\",\"shot_description\":\"A protein bar rests on a sleek, black marble surface with a hint of lush greenery in the background. Natural diffused lighting highlights the bar's contours. The camera angle is flat-lay, top-down. The theme is nature-meets-modern, using a color palette of deep greens and earthen tones to emphasize the product's unique inner ingredients.\",\"camera_angle\":\"Flat-lay, Top-down\",\"camera_motion\":\"None\"},{\"shot_number\":2,\"title\":\"Macro Shot\",\"shot_type\":\"Macro\",\"shot_description\":\"An extreme close-up zooms in on the textured surface of the protein bar, highlighting the granularity and ruggedness of the natural ingredients. Soft, side lighting accentuates the individual grains and embedded nuts. The camera slowly pans across the surface, creating a sense of earthy authenticity. The green inside is subtly visible at the corner, hinting at the vibrant, nutritious content.\",\"camera_angle\":\"Extreme Close-up\",\"camera_motion\":\"Slow Pan\"},{\"shot_number\":3,\"title\":\"Feature Shot\",\"shot_type\":\"Feature\",\"shot_description\":\"The bar splits in half, revealing its vibrant green inside filled with spirulina and pistachios. A subtle backlight illuminates the interior, creating a striking contrast with the exterior. The camera angle is medium close-up, capturing the split moment in slow motion to highlight the freshness and richness of the ingredients. The theme is about modern healthy eating with a focus on natural energy.\",\"camera_angle\":\"Medium Close-up\",\"camera_motion\":\"Slow Motion\"}]",
-      imageLinks: ["https://drive.google.com/file/d/1C8CgkJOJN7_N5vCVR2hwrgspWrCLRmoQ/view?usp=drivesdk","https://drive.google.com/file/d/1zeZqHR2N7uX-O4QxLtGtsVVNpdjLcHVU/view?usp=drivesdk","https://drive.google.com/file/d/1RKeE0TCKQirc7J0s-qEtGVL4bUMkzRET/view?usp=drivesdk"]
+      response:
+        '[{"shot_number":1,"title":"Reveal Shot","shot_type":"Reveal","shot_description":"A protein bar rests on a sleek, black marble surface with a hint of lush greenery in the background. Natural diffused lighting highlights the bar\'s contours. The camera angle is flat-lay, top-down. The theme is nature-meets-modern, using a color palette of deep greens and earthen tones to emphasize the product\'s unique inner ingredients.","camera_angle":"Flat-lay, Top-down","camera_motion":"None"},{"shot_number":2,"title":"Macro Shot","shot_type":"Macro","shot_description":"An extreme close-up zooms in on the textured surface of the protein bar, highlighting the granularity and ruggedness of the natural ingredients. Soft, side lighting accentuates the individual grains and embedded nuts. The camera slowly pans across the surface, creating a sense of earthy authenticity. The green inside is subtly visible at the corner, hinting at the vibrant, nutritious content.","camera_angle":"Extreme Close-up","camera_motion":"Slow Pan"},{"shot_number":3,"title":"Feature Shot","shot_type":"Feature","shot_description":"The bar splits in half, revealing its vibrant green inside filled with spirulina and pistachios. A subtle backlight illuminates the interior, creating a striking contrast with the exterior. The camera angle is medium close-up, capturing the split moment in slow motion to highlight the freshness and richness of the ingredients. The theme is about modern healthy eating with a focus on natural energy.","camera_angle":"Medium Close-up","camera_motion":"Slow Motion"}]',
+      imageLinks: [
+        "https://drive.google.com/file/d/1C8CgkJOJN7_N5vCVR2hwrgspWrCLRmoQ/view?usp=drivesdk",
+        "https://drive.google.com/file/d/1zeZqHR2N7uX-O4QxLtGtsVVNpdjLcHVU/view?usp=drivesdk",
+        "https://drive.google.com/file/d/1RKeE0TCKQirc7J0s-qEtGVL4bUMkzRET/view?usp=drivesdk",
+      ],
     },
     {
       prompt: "create ad for a glass with 2 shot only",
-      response: "[{\"shot_number\":1,\"title\":\"Silhouette Shot\",\"shot_type\":\"Silhouette\",\"shot_description\":\"A finely crafted glass stands against a bright white background, its elegant shape and smooth curves highlighted as a stark silhouette. The lighting from behind is bright and uniform, leaving just an intriguing, dark outline of the glass. The shot focuses on the delicate contours and perfect symmetry, creating an aura of mystery and sophistication around the product.\",\"camera_angle\":\"Side Profile\",\"camera_motion\":\"Slow Orbit\"},{\"shot_number\":2,\"title\":\"Hero Shot\",\"shot_type\":\"Hero\",\"shot_description\":\"The glass is revealed in all its pristine glory, filled halfway with sparkling water that gently ripples with vibrant reflections of light. The top-down view emphasizes the clarity and thickness of the glass, showcasing its polished rim and the subtle patterns of light refracted through the water. The scene is brightly lit with a subtle warm tone, capturing every detail to highlight the craftsmanship and purity of the glass.\",\"camera_angle\":\"Top-Down\",\"camera_motion\":\"Slow Push-in\"}]",
-      imageLinks: ["https://drive.google.com/file/d/1ah5JiwfhF6BkJuibF0gzNBgE2gJ76Ktf/view?usp=drivesdk","https://drive.google.com/file/d/1b79LS8rZsLEQawiAaiqSlLoT7IqbZWU3/view?usp=drivesdk"]
+      response:
+        '[{"shot_number":1,"title":"Silhouette Shot","shot_type":"Silhouette","shot_description":"A finely crafted glass stands against a bright white background, its elegant shape and smooth curves highlighted as a stark silhouette. The lighting from behind is bright and uniform, leaving just an intriguing, dark outline of the glass. The shot focuses on the delicate contours and perfect symmetry, creating an aura of mystery and sophistication around the product.","camera_angle":"Side Profile","camera_motion":"Slow Orbit"},{"shot_number":2,"title":"Hero Shot","shot_type":"Hero","shot_description":"The glass is revealed in all its pristine glory, filled halfway with sparkling water that gently ripples with vibrant reflections of light. The top-down view emphasizes the clarity and thickness of the glass, showcasing its polished rim and the subtle patterns of light refracted through the water. The scene is brightly lit with a subtle warm tone, capturing every detail to highlight the craftsmanship and purity of the glass.","camera_angle":"Top-Down","camera_motion":"Slow Push-in"}]',
+      imageLinks: [
+        "https://drive.google.com/file/d/1ah5JiwfhF6BkJuibF0gzNBgE2gJ76Ktf/view?usp=drivesdk",
+        "https://drive.google.com/file/d/1b79LS8rZsLEQawiAaiqSlLoT7IqbZWU3/view?usp=drivesdk",
+      ],
     },
     {
       prompt: "create ad for a airpod with 2 shot only",
-      response: "[{\"shot_number\":1,\"title\":\"Ease-of-Use Interaction\",\"shot_type\":\"Interaction Shot\",\"shot_description\":\"A sleek pair of AirPods rests in their polished, white charging case on a clean, modern desk surface. Soft, ambient lighting highlights the smooth curves and premium design of the case. As the camera gently pushes in for a medium close-up, a hand effortlessly opens the case, triggering the AirPods' light indicator to subtly glow. The scene captures the seamless user experience of the AirPods being ready to pair instantly. The lighting is soft, emphasizing the product's seamless integration into daily life.\",\"camera_angle\":\"Medium Close-Up\",\"camera_motion\":\"Push-in\"},{\"shot_number\":2,\"title\":\"Audio Freedom\",\"shot_type\":\"Hero Shot\",\"shot_description\":\"The AirPods are suspended in mid-air against a minimalist, light background, gently rotating to showcase their glossy finish and ergonomic stem design. A subtle spotlight casts a halo effect, accentuating the elegant form and lightweight nature of the AirPods as they rotate in a dreamy slow-motion. This shot conveys a sense of limitless freedom and high-tech appeal, positioning the AirPods as a must-have lifestyle accessory. The mood is dreamy and aspirational, focusing on clean lines and the sophisticated design.\",\"camera_angle\":\"Low Angle\",\"camera_motion\":\"Slow Orbit\"}]",
-      imageLinks: ["https://drive.google.com/file/d/1NZTs-PEZF94ZQVpd-ivX-xD1RvdAHA0N/view?usp=drivesdk","https://drive.google.com/file/d/1tSNZvtFMu-LNzXcpdlyZZmnGe24ntj0s/view?usp=drivesdk"]
+      response:
+        '[{"shot_number":1,"title":"Ease-of-Use Interaction","shot_type":"Interaction Shot","shot_description":"A sleek pair of AirPods rests in their polished, white charging case on a clean, modern desk surface. Soft, ambient lighting highlights the smooth curves and premium design of the case. As the camera gently pushes in for a medium close-up, a hand effortlessly opens the case, triggering the AirPods\' light indicator to subtly glow. The scene captures the seamless user experience of the AirPods being ready to pair instantly. The lighting is soft, emphasizing the product\'s seamless integration into daily life.","camera_angle":"Medium Close-Up","camera_motion":"Push-in"},{"shot_number":2,"title":"Audio Freedom","shot_type":"Hero Shot","shot_description":"The AirPods are suspended in mid-air against a minimalist, light background, gently rotating to showcase their glossy finish and ergonomic stem design. A subtle spotlight casts a halo effect, accentuating the elegant form and lightweight nature of the AirPods as they rotate in a dreamy slow-motion. This shot conveys a sense of limitless freedom and high-tech appeal, positioning the AirPods as a must-have lifestyle accessory. The mood is dreamy and aspirational, focusing on clean lines and the sophisticated design.","camera_angle":"Low Angle","camera_motion":"Slow Orbit"}]',
+      imageLinks: [
+        "https://drive.google.com/file/d/1NZTs-PEZF94ZQVpd-ivX-xD1RvdAHA0N/view?usp=drivesdk",
+        "https://drive.google.com/file/d/1tSNZvtFMu-LNzXcpdlyZZmnGe24ntj0s/view?usp=drivesdk",
+      ],
     },
     {
       prompt: "create ad for a oneplus buds with 2 shot only",
-      response: "[{\"shot_number\":1,\"title\":\"Unboxing Teaser\",\"shot_type\":\"Packaging Shot\",\"shot_description\":\"A sleek, modern box of OnePlus Buds rests on a minimalist wooden table with diffuse natural light illuminating the textured surface. The camera is positioned overhead, capturing a hand that gently lifts the lid to reveal the pristine earbuds nestled inside their charging case. The movement is slow and deliberate, building anticipation. The lighting emphasizes the premium packaging design and the satisfaction of unboxing. The theme is sophisticated and minimalist, with clean lines and understated elegance.\",\"camera_angle\":\"Overhead\",\"camera_motion\":\"Slow reveal\"},{\"shot_number\":2,\"title\":\"Lifestyle Integration\",\"shot_type\":\"Lifestyle Shot\",\"shot_description\":\"The OnePlus Buds are shown in use, with one earbud gently placed in an ear while the other rests in the palm of a hand. The camera captures this intimate moment in soft focus, highlighting the ergonomic design and comfortable fit. Warm, natural lighting creates a cozy atmosphere, suggesting the earbuds' role in enhancing daily life. The background is softly blurred, focusing attention on the product's seamless integration into the user's routine. The theme is personal and relatable, emphasizing comfort and everyday use.\",\"camera_angle\":\"Close-up\",\"camera_motion\":\"Gentle focus pull\"}]",
-      imageLinks: ["https://drive.google.com/file/d/1i8PifmgiZvmS-LZEXV1CqdnD2-eZTVx4/view?usp=drivesdk","https://drive.google.com/file/d/11YqLSJHaKHMU26m97MXuFGp-UZR2k4Kj/view?usp=drivesdk"]
-    }
+      response:
+        '[{"shot_number":1,"title":"Unboxing Teaser","shot_type":"Packaging Shot","shot_description":"A sleek, modern box of OnePlus Buds rests on a minimalist wooden table with diffuse natural light illuminating the textured surface. The camera is positioned overhead, capturing a hand that gently lifts the lid to reveal the pristine earbuds nestled inside their charging case. The movement is slow and deliberate, building anticipation. The lighting emphasizes the premium packaging design and the satisfaction of unboxing. The theme is sophisticated and minimalist, with clean lines and understated elegance.","camera_angle":"Overhead","camera_motion":"Slow reveal"},{"shot_number":2,"title":"Lifestyle Integration","shot_type":"Lifestyle Shot","shot_description":"The OnePlus Buds are shown in use, with one earbud gently placed in an ear while the other rests in the palm of a hand. The camera captures this intimate moment in soft focus, highlighting the ergonomic design and comfortable fit. Warm, natural lighting creates a cozy atmosphere, suggesting the earbuds\' role in enhancing daily life. The background is softly blurred, focusing attention on the product\'s seamless integration into the user\'s routine. The theme is personal and relatable, emphasizing comfort and everyday use.","camera_angle":"Close-up","camera_motion":"Gentle focus pull"}]',
+      imageLinks: [
+        "https://drive.google.com/file/d/1i8PifmgiZvmS-LZEXV1CqdnD2-eZTVx4/view?usp=drivesdk",
+        "https://drive.google.com/file/d/11YqLSJHaKHMU26m97MXuFGp-UZR2k4Kj/view?usp=drivesdk",
+      ],
+    },
   ];
 
   // Function to convert Google Drive links to direct image URLs
   const convertGoogleDriveLink = (driveLink: string) => {
-    if (driveLink.includes('drive.google.com')) {
+    if (driveLink.includes("drive.google.com")) {
       const fileId = driveLink.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
       if (fileId) {
         // Use a different Google Drive URL format that works better for images
@@ -93,26 +109,30 @@ const [charIndex, setCharIndex] = useState(0);
       protein: [
         "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=300&h=200&fit=crop"
+        "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=300&h=200&fit=crop",
       ],
       glass: [
         "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1567653418876-5bb0e566e1c2?w=300&h=200&fit=crop"
+        "https://images.unsplash.com/photo-1567653418876-5bb0e566e1c2?w=300&h=200&fit=crop",
       ],
       airpod: [
         "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=300&h=200&fit=crop"
+        "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=300&h=200&fit=crop",
       ],
       oneplus: [
         "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=300&h=200&fit=crop"
-      ]
+        "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=300&h=200&fit=crop",
+      ],
     };
 
-    if (prompt.includes('protein')) return fallbackImages.protein[index % fallbackImages.protein.length];
-    if (prompt.includes('glass')) return fallbackImages.glass[index % fallbackImages.glass.length];
-    if (prompt.includes('airpod')) return fallbackImages.airpod[index % fallbackImages.airpod.length];
-    if (prompt.includes('oneplus')) return fallbackImages.oneplus[index % fallbackImages.oneplus.length];
+    if (prompt.includes("protein"))
+      return fallbackImages.protein[index % fallbackImages.protein.length];
+    if (prompt.includes("glass"))
+      return fallbackImages.glass[index % fallbackImages.glass.length];
+    if (prompt.includes("airpod"))
+      return fallbackImages.airpod[index % fallbackImages.airpod.length];
+    if (prompt.includes("oneplus"))
+      return fallbackImages.oneplus[index % fallbackImages.oneplus.length];
 
     return `https://images.unsplash.com/photo-${1500000000000 + index}?w=300&h=200&fit=crop`;
   };
@@ -128,20 +148,26 @@ const [charIndex, setCharIndex] = useState(0);
         text: conv.prompt,
         isUser: true,
         uploadedImages: [],
-        timestamp: new Date(Date.now() - (excelConversations.length - index) * 60000)
+        timestamp: new Date(
+          Date.now() - (excelConversations.length - index) * 60000,
+        ),
       };
 
       // Use the Google Drive image links from Excel data
-      const outputImages = conv.imageLinks ?
-        conv.imageLinks.map(convertGoogleDriveLink) : [];
+      const outputImages = conv.imageLinks
+        ? conv.imageLinks.map(convertGoogleDriveLink)
+        : [];
 
       return {
         id: threadId,
-        title: conv.prompt.slice(0, 40) + (conv.prompt.length > 40 ? "..." : ""),
+        title:
+          conv.prompt.slice(0, 40) + (conv.prompt.length > 40 ? "..." : ""),
         messages: [userMessage], // Only user message, no AI response
         outputImages: outputImages,
-        createdAt: new Date(Date.now() - (excelConversations.length - index) * 60000),
-        isFrozen: true
+        createdAt: new Date(
+          Date.now() - (excelConversations.length - index) * 60000,
+        ),
+        isFrozen: true,
       };
     });
   };
@@ -157,7 +183,7 @@ const [charIndex, setCharIndex] = useState(0);
         outputImages: [],
         isFrozen: false,
       },
-      ...excelThreads
+      ...excelThreads,
     ];
   });
 
@@ -331,27 +357,27 @@ const [charIndex, setCharIndex] = useState(0);
       });
     }
   };
-useEffect(() => {
-  if (isGenerating) return;
+  useEffect(() => {
+    if (isGenerating) return;
 
-  const currentPrompt = prompts[promptIndex];
-  if (charIndex < currentPrompt.length) {
-    const timeout = setTimeout(() => {
-      setPlaceholderText((prev) => prev + currentPrompt.charAt(charIndex));
-      setCharIndex(charIndex + 1);
-    }, 100);
+    const currentPrompt = prompts[promptIndex];
+    if (charIndex < currentPrompt.length) {
+      const timeout = setTimeout(() => {
+        setPlaceholderText((prev) => prev + currentPrompt.charAt(charIndex));
+        setCharIndex(charIndex + 1);
+      }, 100);
 
-    return () => clearTimeout(timeout);
-  } else {
-    const timeout = setTimeout(() => {
-      setPlaceholderText("");
-      setCharIndex(0);
-      setPromptIndex((promptIndex + 1) % prompts.length);
-    }, 2000);
+      return () => clearTimeout(timeout);
+    } else {
+      const timeout = setTimeout(() => {
+        setPlaceholderText("");
+        setCharIndex(0);
+        setPromptIndex((promptIndex + 1) % prompts.length);
+      }, 2000);
 
-    return () => clearTimeout(timeout);
-  }
-}, [charIndex, promptIndex, isGenerating]);
+      return () => clearTimeout(timeout);
+    }
+  }, [charIndex, promptIndex, isGenerating]);
 
   return (
     <div className="h-screen bg-gray-100 flex">
@@ -392,12 +418,15 @@ useEffect(() => {
               title={thread.messages[0]?.text || "New Chat"}
             >
               <div className="truncate">{thread.title}</div>
-              {thread.id.startsWith('excel-new-') && (
+              {thread.id.startsWith("excel-new-") && (
                 <div className="text-xs text-green-600 mt-1">✨ New Import</div>
               )}
-              {thread.id.startsWith('excel-') && !thread.id.startsWith('excel-new-') && (
-                <div className="text-xs text-blue-600 mt-1">📊 Old Import</div>
-              )}
+              {thread.id.startsWith("excel-") &&
+                !thread.id.startsWith("excel-new-") && (
+                  <div className="text-xs text-blue-600 mt-1">
+                    📊 Old Import
+                  </div>
+                )}
             </div>
           ))}
         </div>
@@ -452,8 +481,14 @@ useEffect(() => {
                       className="h-full w-24 object-cover rounded bg-gray-200"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        if (target.src !== getFallbackImage(index, currentThread?.title || '')) {
-                          target.src = getFallbackImage(index, currentThread?.title || '');
+                        if (
+                          target.src !==
+                          getFallbackImage(index, currentThread?.title || "")
+                        ) {
+                          target.src = getFallbackImage(
+                            index,
+                            currentThread?.title || "",
+                          );
                         }
                       }}
                     />
@@ -484,8 +519,17 @@ useEffect(() => {
                   className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    if (target.src !== getFallbackImage(selectedImageIndex, currentThread?.title || '')) {
-                      target.src = getFallbackImage(selectedImageIndex, currentThread?.title || '');
+                    if (
+                      target.src !==
+                      getFallbackImage(
+                        selectedImageIndex,
+                        currentThread?.title || "",
+                      )
+                    ) {
+                      target.src = getFallbackImage(
+                        selectedImageIndex,
+                        currentThread?.title || "",
+                      );
                     }
                   }}
                 />
@@ -509,19 +553,36 @@ useEffect(() => {
                       )}
                     >
                       <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-normal">
-                        {message.text.includes('**Shot ') ? (
+                        {message.text.includes("**Shot ") ? (
                           // Format shot descriptions with better styling
                           <div className="space-y-4">
-                            {message.text.split('\n\n').map((shot, index) => (
-                              <div key={index} className="border-l-4 border-blue-400 pl-3 py-2 bg-blue-50/50 rounded-r">
-                                <div dangerouslySetInnerHTML={{
-                                  __html: shot
-                                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-blue-700">$1</strong>')
-                                    .replace(/Type: (.*?)(?=\n|$)/g, '<div class="text-sm text-gray-600 mt-1"><span class="font-medium">Type:</span> $1</div>')
-                                    .replace(/Camera: (.*?)(?=\n|$)/g, '<div class="text-sm text-gray-600"><span class="font-medium">Camera:</span> $1</div>')
-                                    .replace(/Description: (.*?)(?=\n|$)/g, '<div class="text-gray-700 mt-1">$1</div>')
-                                    .replace(/\n/g, '<br>')
-                                }} />
+                            {message.text.split("\n\n").map((shot, index) => (
+                              <div
+                                key={index}
+                                className="border-l-4 border-blue-400 pl-3 py-2 bg-blue-50/50 rounded-r"
+                              >
+                                <div
+                                  dangerouslySetInnerHTML={{
+                                    __html: shot
+                                      .replace(
+                                        /\*\*(.*?)\*\*/g,
+                                        '<strong class="text-blue-700">$1</strong>',
+                                      )
+                                      .replace(
+                                        /Type: (.*?)(?=\n|$)/g,
+                                        '<div class="text-sm text-gray-600 mt-1"><span class="font-medium">Type:</span> $1</div>',
+                                      )
+                                      .replace(
+                                        /Camera: (.*?)(?=\n|$)/g,
+                                        '<div class="text-sm text-gray-600"><span class="font-medium">Camera:</span> $1</div>',
+                                      )
+                                      .replace(
+                                        /Description: (.*?)(?=\n|$)/g,
+                                        '<div class="text-gray-700 mt-1">$1</div>',
+                                      )
+                                      .replace(/\n/g, "<br>"),
+                                  }}
+                                />
                               </div>
                             ))}
                           </div>
@@ -604,7 +665,9 @@ useEffect(() => {
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   onPaste={handlePaste}
-                  placeholder={placeholderText || "Start typing your prompt here..."}
+                  placeholder={
+                    placeholderText || "Start typing your prompt here..."
+                  }
                   className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
                   rows={1}
                   disabled={isGenerating || currentThread?.isFrozen}
