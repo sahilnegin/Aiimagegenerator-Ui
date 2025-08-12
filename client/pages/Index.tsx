@@ -345,20 +345,13 @@ export default function Index() {
     } catch (error) {
       console.error('Error submitting to n8n webhook:', error);
 
-      // Fallback to demo images on error
-      const fallbackImages = [
-        "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop",
-      ];
-
+      // No fallback images - just show empty gallery on error
       setThreads((prevThreads) =>
         prevThreads.map((thread) =>
           thread.id === selectedThread
             ? {
                 ...thread,
-                outputImages: fallbackImages,
+                outputImages: [], // Empty array - no images on error
               }
             : thread,
         ),
