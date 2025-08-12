@@ -26,49 +26,6 @@ export default function Index() {
       id: "1",
       title: "New Chat",
       createdAt: new Date(),
-      messages: [
-        {
-          id: "1",
-          text: "DDG is a smart touchscreen that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives. DDG is a smart touchscreen switch panel that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives. DDG is a smart touchscreen switch panel that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives.",
-          isUser: true,
-          timestamp: new Date()
-        }
-      ]
-    },
-    {
-      id: "2", 
-      title: "Thread 1",
-      createdAt: new Date(),
-      messages: []
-    },
-    {
-      id: "3",
-      title: "Thread 2", 
-      createdAt: new Date(),
-      messages: []
-    },
-    {
-      id: "4",
-      title: "Thread 3",
-      createdAt: new Date(), 
-      messages: []
-    },
-    {
-      id: "5",
-      title: "Thread 4",
-      createdAt: new Date(),
-      messages: []
-    },
-    {
-      id: "6",
-      title: "Thread 5",
-      createdAt: new Date(),
-      messages: []
-    },
-    {
-      id: "7",
-      title: "Thread 6",
-      createdAt: new Date(),
       messages: []
     }
   ]);
