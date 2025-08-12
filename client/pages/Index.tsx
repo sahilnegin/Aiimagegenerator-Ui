@@ -80,10 +80,41 @@ const [charIndex, setCharIndex] = useState(0);
     if (driveLink.includes('drive.google.com')) {
       const fileId = driveLink.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
       if (fileId) {
-        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+        // Use a different Google Drive URL format that works better for images
+        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h300`;
       }
     }
     return driveLink;
+  };
+
+  // Fallback images for when Google Drive links fail
+  const getFallbackImage = (index: number, prompt: string) => {
+    const fallbackImages = {
+      protein: [
+        "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=300&h=200&fit=crop"
+      ],
+      glass: [
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1567653418876-5bb0e566e1c2?w=300&h=200&fit=crop"
+      ],
+      airpod: [
+        "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=300&h=200&fit=crop"
+      ],
+      oneplus: [
+        "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=300&h=200&fit=crop"
+      ]
+    };
+
+    if (prompt.includes('protein')) return fallbackImages.protein[index % fallbackImages.protein.length];
+    if (prompt.includes('glass')) return fallbackImages.glass[index % fallbackImages.glass.length];
+    if (prompt.includes('airpod')) return fallbackImages.airpod[index % fallbackImages.airpod.length];
+    if (prompt.includes('oneplus')) return fallbackImages.oneplus[index % fallbackImages.oneplus.length];
+
+    return `https://images.unsplash.com/photo-${1500000000000 + index}?w=300&h=200&fit=crop`;
   };
 
   // Function to create threads from Excel data
