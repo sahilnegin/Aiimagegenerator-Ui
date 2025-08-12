@@ -1,5 +1,5 @@
-const XLSX = require('xlsx');
-const fs = require('fs');
+import XLSX from 'xlsx';
+import fs from 'fs';
 
 // Read the Excel file
 const workbook = XLSX.readFile('Image_UI_Generation_Thread.xlsx');
