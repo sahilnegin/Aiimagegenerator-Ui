@@ -132,6 +132,7 @@ export default function Index() {
                   ? inputText.slice(0, 30) +
                     (inputText.length > 30 ? "..." : "")
                   : thread.title,
+              isFrozen: true,
             }
           : thread,
       ),
