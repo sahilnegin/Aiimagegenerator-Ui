@@ -75,10 +75,21 @@ const [charIndex, setCharIndex] = useState(0);
     }
   ];
 
+  // Function to convert Google Drive links to direct image URLs
+  const convertGoogleDriveLink = (driveLink: string) => {
+    if (driveLink.includes('drive.google.com')) {
+      const fileId = driveLink.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+      }
+    }
+    return driveLink;
+  };
+
   // Function to create threads from Excel data
   const createThreadsFromExcelData = () => {
     return excelConversations.map((conv, index) => {
-      const threadId = `excel-${index + 1}`;
+      const threadId = `excel-new-${index + 1}`;
 
       // Parse the JSON response to extract shot descriptions
       let shotDescriptions: any[] = [];
@@ -111,21 +122,12 @@ const [charIndex, setCharIndex] = useState(0);
         timestamp: new Date(Date.now() - (excelConversations.length - index) * 60000 + 5000)
       };
 
-      // Generate placeholder images for each shot based on protein bar theme
-      const proteinBarImages = [
-        "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=200&fit=crop", // protein bar
-        "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=200&fit=crop", // granola bar
-        "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=300&h=200&fit=crop", // energy bar
-        "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=300&h=200&fit=crop", // nuts
-        "https://images.unsplash.com/photo-1585486038681-cd30bb4ecf44?w=300&h=200&fit=crop", // chocolate bar
-        "https://images.unsplash.com/photo-1604467707321-70d5ac45adda?w=300&h=200&fit=crop", // health food
-        "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=300&h=200&fit=crop", // granola
-        "https://images.unsplash.com/photo-1596797882870-8b37d171856e?w=300&h=200&fit=crop"  // protein snack
-      ];
-
-      const outputImages = shotDescriptions.map((_, imgIndex) =>
-        proteinBarImages[imgIndex % proteinBarImages.length]
-      );
+      // Use the Google Drive image links from Excel data
+      const outputImages = conv.imageLinks ?
+        conv.imageLinks.map(convertGoogleDriveLink) :
+        shotDescriptions.map((_, imgIndex) =>
+          `https://images.unsplash.com/photo-${1500000000000 + threadId.charCodeAt(0) * 1000 + imgIndex}?w=300&h=200&fit=crop&auto=format`
+        );
 
       return {
         id: threadId,
