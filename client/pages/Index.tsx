@@ -23,6 +23,7 @@ interface Thread {
   messages: Message[];
   outputImages: string[];
   createdAt: Date;
+  isFrozen: boolean;
 }
 
 export default function Index() {
