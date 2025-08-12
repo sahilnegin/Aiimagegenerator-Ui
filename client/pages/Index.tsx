@@ -482,6 +482,12 @@ useEffect(() => {
                   src={currentThread.outputImages[selectedImageIndex]}
                   alt="Selected image"
                   className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== getFallbackImage(selectedImageIndex, currentThread?.title || '')) {
+                      target.src = getFallbackImage(selectedImageIndex, currentThread?.title || '');
+                    }
+                  }}
                 />
               </div>
             </div>
