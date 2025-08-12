@@ -249,7 +249,7 @@ export default function Index() {
     }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputText.trim() && uploadedImages.length === 0) return;
     if (isGenerating || currentThread?.isFrozen) return;
 
@@ -280,38 +280,128 @@ export default function Index() {
       ),
     );
 
+    // Store the current input text and uploaded images before clearing
+    const currentInputText = inputText;
+    const currentUploadedImages = [...uploadedImages];
+
     setInputText("");
     setUploadedImages([]);
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
 
-    // Simulate AI response with generated images only (no text)
-    setTimeout(() => {
-      const generatedImages = [
-        "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=300&h=200&fit=crop",
-      ];
+    try {
+      // Submit to n8n webhook
+      const formData = new FormData();
+      formData.append("chatInput", currentInputText);
 
+      // Convert first uploaded image to blob and append to form data
+      if (currentUploadedImages.length > 0) {
+        // Convert base64 to blob
+        const base64Data = currentUploadedImages[0];
+        const response = await fetch(base64Data);
+        const blob = await response.blob();
+        formData.append("data", blob, "uploaded-image.jpeg");
+      }
+
+      const webhookResponse = await fetch(
+        "https://vidgy.app.n8n.cloud/webhook/84342f4e-4ba8-4a87-939f-2c2880571a5e",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      if (webhookResponse.ok) {
+        const result = await webhookResponse.json();
+        console.log("n8n webhook response:", result);
+        console.log("Response type:", typeof result);
+        console.log("Response keys:", Object.keys(result || {}));
+
+        // Parse the response and extract generated images
+        let generatedImages: string[] = [];
+
+        if (result && typeof result === "object") {
+          // Try multiple possible response formats
+          if (result.images && Array.isArray(result.images)) {
+            generatedImages = result.images;
+            console.log("Found images in result.images:", generatedImages);
+          } else if (result.imageUrls && Array.isArray(result.imageUrls)) {
+            generatedImages = result.imageUrls;
+            console.log("Found images in result.imageUrls:", generatedImages);
+          } else if (result.data && Array.isArray(result.data)) {
+            generatedImages = result.data;
+            console.log("Found images in result.data:", generatedImages);
+          } else if (result.output && Array.isArray(result.output)) {
+            generatedImages = result.output;
+            console.log("Found images in result.output:", generatedImages);
+          } else if (Array.isArray(result)) {
+            generatedImages = result;
+            console.log("Result is an array:", generatedImages);
+          } else {
+            // Look for any array of strings that might be image URLs
+            Object.keys(result).forEach((key) => {
+              if (Array.isArray(result[key]) && result[key].length > 0) {
+                if (
+                  typeof result[key][0] === "string" &&
+                  result[key][0].includes("http")
+                ) {
+                  generatedImages = result[key];
+                  console.log(
+                    `Found images in result.${key}:`,
+                    generatedImages,
+                  );
+                }
+              }
+            });
+          }
+        }
+
+        console.log("Final generatedImages:", generatedImages);
+
+        setThreads((prevThreads) =>
+          prevThreads.map((thread) =>
+            thread.id === selectedThread
+              ? {
+                  ...thread,
+                  outputImages: generatedImages, // Will be empty array if no images from API
+                }
+              : thread,
+          ),
+        );
+
+        setIsGenerating(false);
+      } else {
+        const errorText = await webhookResponse.text();
+        console.error(
+          `Webhook request failed: ${webhookResponse.status}`,
+          errorText,
+        );
+        throw new Error(`Webhook request failed: ${webhookResponse.status}`);
+      }
+    } catch (error) {
+      console.error("Error submitting to n8n webhook:", error);
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        inputText: currentInputText,
+        hasImages: currentUploadedImages.length > 0,
+      });
+
+      // No fallback images - just show empty gallery on error
       setThreads((prevThreads) =>
         prevThreads.map((thread) =>
           thread.id === selectedThread
             ? {
                 ...thread,
-                outputImages: generatedImages,
+                outputImages: [], // Empty array - no images on error
               }
             : thread,
         ),
       );
 
       setIsGenerating(false);
-    }, 3000);
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
