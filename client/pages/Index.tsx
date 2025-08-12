@@ -199,11 +199,11 @@ export default function Index() {
       messages: [],
       outputImages: [],
       createdAt: new Date(),
+      isFrozen: false,
     };
     setThreads((prev) => [newThread, ...prev]);
     setSelectedThread(newThread.id);
     setSelectedImageIndex(null);
-    setIsFrozen(false);
     setIsGenerating(false);
   };
 
