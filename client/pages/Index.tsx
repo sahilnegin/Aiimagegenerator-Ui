@@ -146,7 +146,6 @@ export default function Index() {
 
     // Simulate AI response with generated images only (no text)
     setTimeout(() => {
-
       const generatedImages = [
         "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
