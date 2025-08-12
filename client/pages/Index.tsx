@@ -91,15 +91,7 @@ const [charIndex, setCharIndex] = useState(0);
     return excelConversations.map((conv, index) => {
       const threadId = `excel-new-${index + 1}`;
 
-      // Parse the JSON response to extract shot descriptions
-      let shotDescriptions: any[] = [];
-      try {
-        shotDescriptions = JSON.parse(conv.response);
-      } catch (e) {
-        console.error('Error parsing shot descriptions:', e);
-      }
-
-      // Create user message
+      // Create user message only
       const userMessage: Message = {
         id: `${threadId}-user`,
         text: conv.prompt,
@@ -108,31 +100,14 @@ const [charIndex, setCharIndex] = useState(0);
         timestamp: new Date(Date.now() - (excelConversations.length - index) * 60000)
       };
 
-      // Create AI response with shot descriptions
-      const aiMessage: Message = {
-        id: `${threadId}-ai`,
-        text: shotDescriptions.map((shot, idx) =>
-          `**Shot ${shot.shot_number}: ${shot.title}**\n` +
-          `Type: ${shot.shot_type}\n` +
-          `Description: ${shot.shot_description}\n` +
-          `Camera: ${shot.camera_angle} | Motion: ${shot.camera_motion}`
-        ).join('\n\n'),
-        isUser: false,
-        uploadedImages: [],
-        timestamp: new Date(Date.now() - (excelConversations.length - index) * 60000 + 5000)
-      };
-
       // Use the Google Drive image links from Excel data
       const outputImages = conv.imageLinks ?
-        conv.imageLinks.map(convertGoogleDriveLink) :
-        shotDescriptions.map((_, imgIndex) =>
-          `https://images.unsplash.com/photo-${1500000000000 + threadId.charCodeAt(0) * 1000 + imgIndex}?w=300&h=200&fit=crop&auto=format`
-        );
+        conv.imageLinks.map(convertGoogleDriveLink) : [];
 
       return {
         id: threadId,
         title: conv.prompt.slice(0, 40) + (conv.prompt.length > 40 ? "..." : ""),
-        messages: [userMessage, aiMessage],
+        messages: [userMessage], // Only user message, no AI response
         outputImages: outputImages,
         createdAt: new Date(Date.now() - (excelConversations.length - index) * 60000),
         isFrozen: true
