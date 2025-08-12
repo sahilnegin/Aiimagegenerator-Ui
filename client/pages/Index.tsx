@@ -108,9 +108,10 @@ export default function Index() {
 
   const handleSendMessage = () => {
     if (!inputText.trim() && uploadedImages.length === 0) return;
-    if (isGenerating) return;
+    if (isGenerating || isFrozen) return;
 
     setIsGenerating(true);
+    setIsFrozen(true);
 
     const newMessage: Message = {
       id: Date.now().toString(),
