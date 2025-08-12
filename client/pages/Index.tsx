@@ -27,7 +27,9 @@ interface Thread {
 
 export default function Index() {
   const [selectedThread, setSelectedThread] = useState("1");
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null,
+  );
   const [inputText, setInputText] = useState("");
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -90,7 +92,10 @@ export default function Index() {
             const reader = new FileReader();
             reader.onload = (e) => {
               if (e.target?.result) {
-                setUploadedImages((prev) => [...prev, e.target.result as string]);
+                setUploadedImages((prev) => [
+                  ...prev,
+                  e.target.result as string,
+                ]);
               }
             };
             reader.readAsDataURL(file);
@@ -380,7 +385,9 @@ export default function Index() {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.1s]"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                        <span className="text-sm text-gray-600">Generating images...</span>
+                        <span className="text-sm text-gray-600">
+                          Generating images...
+                        </span>
                       </div>
                     </div>
                   </div>
