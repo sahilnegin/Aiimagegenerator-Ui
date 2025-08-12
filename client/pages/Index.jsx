@@ -205,7 +205,7 @@ export default function Index() {
       {/* Sidebar */}
       <div className="w-60 bg-gray-200 flex flex-col z-40">
         {/* Chat Icon */}
-        <div className="p-4 pt-16">
+        <div className="p-4">
           <div className="w-8 h-8 bg-white rounded border border-gray-300 flex items-center justify-center">
             <MessageSquare size={16} className="text-black" />
           </div>
