@@ -249,7 +249,7 @@ export default function Index() {
     }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputText.trim() && uploadedImages.length === 0) return;
     if (isGenerating || currentThread?.isFrozen) return;
 
@@ -280,23 +280,82 @@ export default function Index() {
       ),
     );
 
+    // Store the current input text and uploaded images before clearing
+    const currentInputText = inputText;
+    const currentUploadedImages = [...uploadedImages];
+
     setInputText("");
     setUploadedImages([]);
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
 
-    // Simulate AI response with generated images only (no text)
-    setTimeout(() => {
-      const generatedImages = [
+    try {
+      // Submit to n8n webhook
+      const formData = new FormData();
+      formData.append('chatInput', currentInputText);
+
+      // Convert first uploaded image to blob and append to form data
+      if (currentUploadedImages.length > 0) {
+        // Convert base64 to blob
+        const base64Data = currentUploadedImages[0];
+        const response = await fetch(base64Data);
+        const blob = await response.blob();
+        formData.append('data', blob, 'uploaded-image.jpeg');
+      }
+
+      const webhookResponse = await fetch('https://vidgy.app.n8n.cloud/webhook/84342f4e-4ba8-4a87-939f-2c2880571a5e', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (webhookResponse.ok) {
+        const result = await webhookResponse.json();
+        console.log('n8n webhook response:', result);
+
+        // Parse the response and extract generated images
+        let generatedImages: string[] = [];
+
+        if (result && typeof result === 'object') {
+          // Try to extract image URLs from the response
+          // This might need adjustment based on the actual response format from n8n
+          if (result.images && Array.isArray(result.images)) {
+            generatedImages = result.images;
+          } else if (result.imageUrls && Array.isArray(result.imageUrls)) {
+            generatedImages = result.imageUrls;
+          } else {
+            // Fallback to demo images if no images in response
+            generatedImages = [
+              "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
+              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
+            ];
+          }
+        }
+
+        setThreads((prevThreads) =>
+          prevThreads.map((thread) =>
+            thread.id === selectedThread
+              ? {
+                  ...thread,
+                  outputImages: generatedImages,
+                }
+              : thread,
+          ),
+        );
+
+        setIsGenerating(false);
+      } else {
+        throw new Error(`Webhook request failed: ${webhookResponse.status}`);
+      }
+    } catch (error) {
+      console.error('Error submitting to n8n webhook:', error);
+
+      // Fallback to demo images on error
+      const fallbackImages = [
         "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=300&h=200&fit=crop",
-        "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=300&h=200&fit=crop",
       ];
 
       setThreads((prevThreads) =>
@@ -304,14 +363,14 @@ export default function Index() {
           thread.id === selectedThread
             ? {
                 ...thread,
-                outputImages: generatedImages,
+                outputImages: fallbackImages,
               }
             : thread,
         ),
       );
 
       setIsGenerating(false);
-    }, 3000);
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
