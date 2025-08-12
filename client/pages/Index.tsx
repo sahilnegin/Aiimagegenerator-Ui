@@ -276,11 +276,11 @@ export default function Index() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsSidePanelOpen(true)}
-            className="gap-2 lg:hidden"
+            onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}
+            className="gap-2"
           >
             <MessageSquare size={16} />
-            Chat
+            {isSidePanelOpen ? "Close" : "Chat"}
           </Button>
           <h1 className="font-semibold text-gray-900">AI Image Generator</h1>
           <div className="w-16" />
