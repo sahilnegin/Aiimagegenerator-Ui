@@ -297,7 +297,7 @@ export default function Index() {
               </div>
             </div>
           ) : (
-            <div className="flex gap-3 h-full">
+            <div className="flex gap-3 h-full justify-center">
               {[...Array(8)].map((_, i) => (
                 <div
                   key={i}
