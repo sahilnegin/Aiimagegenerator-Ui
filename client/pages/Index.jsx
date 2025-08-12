@@ -15,7 +15,6 @@ export default function Index() {
   const [inputText, setInputText] = useState("");
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [threads, setThreads] = useState([
     {
       id: "1",
