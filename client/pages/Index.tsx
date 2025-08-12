@@ -65,7 +65,7 @@ export default function Index() {
 
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
-    
+
     const newMessage: ChatMessage = {
       id: Date.now().toString(),
       text: inputText,
@@ -73,10 +73,14 @@ export default function Index() {
       timestamp: new Date()
     };
 
-    setThreads(prevThreads => 
-      prevThreads.map(thread => 
-        thread.id === selectedThread 
-          ? { ...thread, messages: [...thread.messages, newMessage] }
+    setThreads(prevThreads =>
+      prevThreads.map(thread =>
+        thread.id === selectedThread
+          ? {
+              ...thread,
+              messages: [...thread.messages, newMessage],
+              title: thread.messages.length === 0 ? inputText.slice(0, 30) + (inputText.length > 30 ? '...' : '') : thread.title
+            }
           : thread
       )
     );
