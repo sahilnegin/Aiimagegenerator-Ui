@@ -450,7 +450,8 @@ export default function Index() {
                 onClick={handleSendMessage}
                 disabled={
                   (!inputText.trim() && uploadedImages.length === 0) ||
-                  isGenerating
+                  isGenerating ||
+                  isFrozen
                 }
                 className="absolute bottom-2 right-2 p-2 h-8 w-8 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:hover:bg-blue-500 rounded-full border-0 flex items-center justify-center"
               >
