@@ -202,6 +202,8 @@ export default function Index() {
     setThreads((prev) => [newThread, ...prev]);
     setSelectedThread(newThread.id);
     setSelectedImageIndex(null);
+    setIsFrozen(false);
+    setIsGenerating(false);
   };
 
   const scrollGallery = (direction: "left" | "right") => {
