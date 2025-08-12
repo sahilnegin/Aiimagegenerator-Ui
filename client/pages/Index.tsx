@@ -43,7 +43,7 @@ const [placeholderText, setPlaceholderText] = useState("");
 const [promptIndex, setPromptIndex] = useState(0);
 const [charIndex, setCharIndex] = useState(0);
 
-  const [selectedThread, setSelectedThread] = useState("excel-1");
+  const [selectedThread, setSelectedThread] = useState("excel-new-1");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null,
   );
