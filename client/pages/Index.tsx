@@ -365,6 +365,9 @@ useEffect(() => {
               title={thread.messages[0]?.text || "New Chat"}
             >
               <div className="truncate">{thread.title}</div>
+              {thread.id.startsWith('excel-') && (
+                <div className="text-xs text-blue-600 mt-1">📊 Imported</div>
+              )}
             </div>
           ))}
         </div>
