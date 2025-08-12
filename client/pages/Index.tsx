@@ -1,25 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import {
   MessageSquare,
-  Plus,
   Send,
   Paperclip,
   ChevronLeft,
   ChevronRight,
   X,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface ChatThread {
-  id: string;
-  title: string;
-  messages: ChatMessage[];
-  outputImages: string[];
-  createdAt: Date;
-}
-
-interface ChatMessage {
+interface Message {
   id: string;
   text: string;
   isUser: boolean;
@@ -27,15 +17,23 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+interface Thread {
+  id: string;
+  title: string;
+  messages: Message[];
+  outputImages: string[];
+  createdAt: Date;
+}
+
 export default function Index() {
-  const [selectedThread, setSelectedThread] = useState<string>("1");
+  const [selectedThread, setSelectedThread] = useState("1");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null,
   );
   const [inputText, setInputText] = useState("");
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [threads, setThreads] = useState<ChatThread[]>([
+  const [threads, setThreads] = useState<Thread[]>([
     {
       id: "1",
       title: "New Chat",
@@ -68,9 +66,12 @@ export default function Index() {
     }
   };
 
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [inputText]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
-    adjustTextareaHeight();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -93,7 +94,7 @@ export default function Index() {
               if (e.target?.result) {
                 setUploadedImages((prev) => [
                   ...prev,
-                  e.target!.result as string,
+                  e.target.result as string,
                 ]);
               }
             };
@@ -110,7 +111,7 @@ export default function Index() {
 
     setIsGenerating(true);
 
-    const newMessage: ChatMessage = {
+    const newMessage: Message = {
       id: Date.now().toString(),
       text: inputText,
       isUser: true,
@@ -142,7 +143,7 @@ export default function Index() {
 
     // Simulate AI response with generated images
     setTimeout(() => {
-      const aiResponse: ChatMessage = {
+      const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         text: "I've generated some images based on your prompt. You can see them in the gallery above.",
         isUser: false,
@@ -156,6 +157,8 @@ export default function Index() {
         "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=300&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=300&h=200&fit=crop",
       ];
 
       setThreads((prevThreads) =>
@@ -181,7 +184,7 @@ export default function Index() {
         const reader = new FileReader();
         reader.onload = (e) => {
           if (e.target?.result) {
-            setUploadedImages((prev) => [...prev, e.target!.result as string]);
+            setUploadedImages((prev) => [...prev, e.target.result as string]);
           }
         };
         reader.readAsDataURL(file);
@@ -194,7 +197,7 @@ export default function Index() {
   };
 
   const createNewChat = () => {
-    const newThread: ChatThread = {
+    const newThread: Thread = {
       id: Date.now().toString(),
       title: "New Chat",
       messages: [],
@@ -218,27 +221,27 @@ export default function Index() {
 
   return (
     <div className="h-screen bg-gray-100 flex">
-      {/* Always Visible Sidebar */}
-      <div className="w-40 bg-gray-200 flex flex-col">
+      {/* Sidebar */}
+      <div className="w-60 bg-gray-200 flex flex-col z-40">
         {/* Chat Icon */}
-        <div className="p-3">
+        <div className="p-4">
           <div className="w-8 h-8 bg-white rounded border border-gray-300 flex items-center justify-center">
             <MessageSquare size={16} className="text-black" />
           </div>
         </div>
 
         {/* New Chat Button */}
-        <div className="px-3 pb-2">
+        <div className="px-4 pb-4">
           <button
             onClick={createNewChat}
-            className="w-full text-left text-sm font-medium text-gray-800 hover:text-black transition-colors"
+            className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
           >
             New Chat
           </button>
         </div>
 
         {/* Thread List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto px-4">
           {threads.map((thread) => (
             <div
               key={thread.id}
@@ -247,10 +250,10 @@ export default function Index() {
                 setSelectedImageIndex(null);
               }}
               className={cn(
-                "px-3 py-1 text-sm cursor-pointer transition-colors",
+                "px-3 py-2 text-sm cursor-pointer transition-colors rounded mb-1 group",
                 selectedThread === thread.id
-                  ? "text-black font-medium"
-                  : "text-gray-600 hover:text-gray-800",
+                  ? "bg-white text-black font-medium"
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-100",
               )}
               title={thread.messages[0]?.text || "New Chat"}
             >
@@ -261,44 +264,41 @@ export default function Index() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-white">
+      <div className="flex-1 bg-white flex flex-col">
         {/* Image Gallery at Top */}
         <div className="h-32 bg-gray-50 border-b border-gray-200 p-4">
           {currentThread?.outputImages &&
           currentThread.outputImages.length > 0 ? (
-            <div className="relative h-full">
+            <div className="relative h-full flex justify-center">
               {currentThread.outputImages.length > 6 && (
                 <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white h-8 w-8 p-0"
+                  <button
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white h-8 w-8 p-0 rounded border border-gray-300 flex items-center justify-center"
                     onClick={() => scrollGallery("left")}
                   >
                     <ChevronLeft size={14} />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white h-8 w-8 p-0"
+                  </button>
+                  <button
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white h-8 w-8 p-0 rounded border border-gray-300 flex items-center justify-center"
                     onClick={() => scrollGallery("right")}
                   >
                     <ChevronRight size={14} />
-                  </Button>
+                  </button>
                 </>
               )}
 
               <div
                 ref={galleryRef}
-                className="flex gap-3 overflow-x-auto scrollbar-hide h-full"
+                className="flex gap-3 overflow-x-auto scrollbar-hide h-full justify-center"
               >
                 {currentThread.outputImages.map((image, index) => (
                   <div
                     key={index}
                     className={cn(
-                      "flex-shrink-0 cursor-pointer transition-all duration-200 h-full",
-                      selectedImageIndex === index &&
-                        "ring-3 ring-gray-400 rounded",
+                      "flex-shrink-0 cursor-pointer transition-all duration-200 h-full border-2 rounded",
+                      selectedImageIndex === index
+                        ? "border-gray-400"
+                        : "border-transparent hover:border-gray-300",
                     )}
                     onClick={() =>
                       setSelectedImageIndex(
@@ -316,8 +316,8 @@ export default function Index() {
               </div>
             </div>
           ) : (
-            <div className="flex gap-3 h-full">
-              {[...Array(6)].map((_, i) => (
+            <div className="flex gap-3 h-full justify-center">
+              {[...Array(8)].map((_, i) => (
                 <div
                   key={i}
                   className="flex-shrink-0 h-full w-24 bg-gray-200 rounded"
@@ -377,6 +377,22 @@ export default function Index() {
                   </div>
                 </div>
               ))}
+              {isGenerating && (
+                <div className="flex">
+                  <div className="flex-1">
+                    <div className="bg-gray-100 text-gray-900 p-4 rounded-lg max-w-2xl">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.1s]"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                        <span className="text-sm text-gray-600">
+                          Generating images...
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div ref={messagesEndRef} />
             </div>
           </div>
@@ -393,14 +409,12 @@ export default function Index() {
                     alt={`Upload ${index + 1}`}
                     className="w-16 h-16 object-cover rounded border"
                   />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full"
+                  <button
+                    className="absolute -top-2 -right-2 w-6 h-6 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center"
                     onClick={() => removeUploadedImage(index)}
                   >
                     <X size={12} />
-                  </Button>
+                  </button>
                 </div>
               ))}
             </div>
@@ -413,18 +427,14 @@ export default function Index() {
                 isGenerating && "opacity-50",
               )}
             >
-              <div className="pr-12">
+              <div className="pr-20">
                 <textarea
                   ref={textareaRef}
                   value={inputText}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   onPaste={handlePaste}
-                  placeholder={
-                    isGenerating
-                      ? "Generating images... Please wait"
-                      : "DOG is a smart touch panel, that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives."
-                  }
+                  placeholder="DOG is a smart touch panel, that replaces traditional switches. It is targeted towards urban home owners who are looking for comfort, convenience and luxury in their lives."
                   className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
                   rows={1}
                   disabled={isGenerating}
@@ -432,32 +442,29 @@ export default function Index() {
               </div>
 
               {/* Paperclip icon - bottom left */}
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 className="absolute bottom-2 left-2 p-1 h-6 w-6 text-gray-400 hover:text-gray-600"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isGenerating}
               >
                 <Paperclip size={16} />
-              </Button>
+              </button>
 
               {/* Send button - bottom right */}
-              <Button
+              <button
                 onClick={handleSendMessage}
                 disabled={
                   (!inputText.trim() && uploadedImages.length === 0) ||
                   isGenerating
                 }
-                size="sm"
-                className="absolute bottom-2 right-2 p-2 h-8 w-8 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:hover:bg-blue-500 rounded-full border-0"
+                className="absolute bottom-2 right-2 p-2 h-8 w-8 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:hover:bg-blue-500 rounded-full border-0 flex items-center justify-center"
               >
                 {isGenerating ? (
                   <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <Send size={14} className="text-white" />
                 )}
-              </Button>
+              </button>
             </div>
           </div>
 
