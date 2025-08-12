@@ -349,7 +349,7 @@ export default function Index() {
                           : "bg-gray-100 text-gray-900",
                       )}
                     >
-                      <div className="whitespace-pre-wrap text-sm leading-relaxed">
+                      <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-normal">
                         {message.text}
                       </div>
 
