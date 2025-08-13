@@ -100,23 +100,19 @@ export default function Index() {
           );
 
           if (columns.length >= 1) {
-            const prompt = columns[0]?.trim() || "";
-            const response = columns[1]?.trim() || "";
+            const prompt = columns[0]?.trim() || ""; // Input Prompt
+            const response = columns[1]?.trim() || ""; // Agent Output
+            const imageColumn = columns[2]?.trim() || ""; // Image Link column
 
-            // Parse image links from subsequent columns (columns 2, 3, 4, etc.)
+            // Parse image links from the Image Link column (column 2)
             const imageLinks = [];
-            console.log(`Row ${i} has ${columns.length} columns:`, columns.map(col => col.substring(0, 30) + '...'));
+            console.log(`Row ${i} Image column content:`, imageColumn.substring(0, 200));
 
-            for (let j = 2; j < columns.length; j++) {
-              const cellContent = columns[j]?.trim();
-              if (!cellContent) continue;
-
-              console.log(`Column ${j} content:`, cellContent.substring(0, 100));
-
+            if (imageColumn) {
               // Check if the cell contains an array (JSON format)
-              if (cellContent.startsWith('[') && cellContent.endsWith(']')) {
+              if (imageColumn.startsWith('[') && imageColumn.endsWith(']')) {
                 try {
-                  const parsedArray = JSON.parse(cellContent);
+                  const parsedArray = JSON.parse(imageColumn);
                   if (Array.isArray(parsedArray)) {
                     console.log(`Found JSON array with ${parsedArray.length} items:`, parsedArray);
                     parsedArray.forEach(link => {
@@ -127,17 +123,17 @@ export default function Index() {
                     });
                   }
                 } catch (e) {
-                  console.log(`Failed to parse JSON array in cell: ${cellContent.substring(0, 50)}...`);
+                  console.log(`Failed to parse JSON array in image column: ${imageColumn.substring(0, 50)}...`);
                 }
               }
               // Check if it's a single Google Drive link or any HTTP link
-              else if (cellContent.includes("drive.google.com") || cellContent.includes("http")) {
-                imageLinks.push(cellContent);
-                console.log(`Added single link:`, cellContent);
+              else if (imageColumn.includes("drive.google.com") || imageColumn.includes("http")) {
+                imageLinks.push(imageColumn);
+                console.log(`Added single image link:`, imageColumn);
               }
               // Check if it's comma-separated links
-              else if (cellContent.includes(',') && (cellContent.includes("drive.google.com") || cellContent.includes("http"))) {
-                const links = cellContent.split(',').map(link => link.trim());
+              else if (imageColumn.includes(',') && (imageColumn.includes("drive.google.com") || imageColumn.includes("http"))) {
+                const links = imageColumn.split(',').map(link => link.trim());
                 console.log(`Found comma-separated links:`, links);
                 links.forEach(link => {
                   if (link.includes("drive.google.com") || link.includes("http")) {
