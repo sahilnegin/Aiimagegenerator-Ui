@@ -60,26 +60,28 @@ export default function Index() {
   const fetchGoogleSheetData = async () => {
     try {
       setIsLoadingSheetData(true);
-      console.log('Fetching Google Sheets data...');
+      console.log("Fetching Google Sheets data...");
 
       // Use the CSV export URL with explicit parameters
       const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
 
-      console.log('CSV URL:', csvUrl);
+      console.log("CSV URL:", csvUrl);
 
       const response = await fetch(csvUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Accept': 'text/csv',
+          Accept: "text/csv",
         },
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch sheet data: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch sheet data: ${response.status} ${response.statusText}`,
+        );
       }
 
       const csvText = await response.text();
-      const rows = csvText.split('\n').filter(row => row.trim());
+      const rows = csvText.split("\n").filter((row) => row.trim());
 
       console.log(`Found ${rows.length} rows in CSV`);
 
@@ -92,7 +94,10 @@ export default function Index() {
         try {
           // Parse CSV row (handle quoted values)
           const columns = parseCSVRow(row);
-          console.log(`Row ${i} parsed into ${columns.length} columns:`, columns.map(col => col.substring(0, 50) + '...'));
+          console.log(
+            `Row ${i} parsed into ${columns.length} columns:`,
+            columns.map((col) => col.substring(0, 50) + "..."),
+          );
 
           if (columns.length >= 1) {
             const prompt = columns[0]?.trim() || "";
@@ -102,32 +107,48 @@ export default function Index() {
             const imageLinks = [];
             for (let j = 2; j < columns.length; j++) {
               const link = columns[j]?.trim();
-              if (link && link.includes('drive.google.com')) {
+              if (link && link.includes("drive.google.com")) {
                 imageLinks.push(link);
               }
             }
 
             // Only add if we have a valid prompt
-            if (prompt && prompt.length > 0 && !prompt.includes('[{') && !prompt.includes('shot_number')) {
+            if (
+              prompt &&
+              prompt.length > 0 &&
+              !prompt.includes("[{") &&
+              !prompt.includes("shot_number")
+            ) {
               conversations.push({
                 prompt,
                 response,
-                imageLinks
+                imageLinks,
               });
-              console.log(`Added conversation: "${prompt.substring(0, 50)}..."`);
+              console.log(
+                `Added conversation: "${prompt.substring(0, 50)}..."`,
+              );
             } else {
-              console.log(`Skipped row ${i} - invalid prompt:`, prompt.substring(0, 100));
+              console.log(
+                `Skipped row ${i} - invalid prompt:`,
+                prompt.substring(0, 100),
+              );
             }
           }
         } catch (error) {
-          console.error(`Error parsing row ${i}:`, error, row.substring(0, 100));
+          console.error(
+            `Error parsing row ${i}:`,
+            error,
+            row.substring(0, 100),
+          );
         }
       }
 
       setSheetConversations(conversations);
-      console.log(`Loaded ${conversations.length} conversations from Google Sheets`);
+      console.log(
+        `Loaded ${conversations.length} conversations from Google Sheets`,
+      );
     } catch (error) {
-      console.error('Error fetching Google Sheets data:', error);
+      console.error("Error fetching Google Sheets data:", error);
       // Fallback to empty array
       setSheetConversations([]);
     } finally {
@@ -138,7 +159,7 @@ export default function Index() {
   // Improved CSV parser that handles quoted values and escaped quotes
   const parseCSVRow = (row: string): string[] => {
     const result = [];
-    let current = '';
+    let current = "";
     let inQuotes = false;
 
     for (let i = 0; i < row.length; i++) {
@@ -154,9 +175,9 @@ export default function Index() {
           // Toggle quote state
           inQuotes = !inQuotes;
         }
-      } else if (char === ',' && !inQuotes) {
+      } else if (char === "," && !inQuotes) {
         result.push(current.trim());
-        current = '';
+        current = "";
       } else {
         current += char;
       }
@@ -274,7 +295,7 @@ export default function Index() {
   useEffect(() => {
     if (!isLoadingSheetData && sheetConversations.length > 0) {
       const sheetThreads = createThreadsFromSheetData();
-      setThreads(prevThreads => [
+      setThreads((prevThreads) => [
         // Keep the "New Chat" thread at the top
         prevThreads[0],
         ...sheetThreads,
@@ -584,7 +605,6 @@ export default function Index() {
           </button>
         </div>
 
-
         {/* Thread List */}
         <div className="flex-1 overflow-y-auto px-4">
           {threads.map((thread) => (
@@ -604,7 +624,9 @@ export default function Index() {
             >
               <div className="line-clamp-2 leading-tight">{thread.title}</div>
               {thread.id.startsWith("sheet-") && (
-                <div className="text-xs text-green-600 mt-1">📊 From Sheets</div>
+                <div className="text-xs text-green-600 mt-1">
+                  📊 From Sheets
+                </div>
               )}
             </div>
           ))}
@@ -612,7 +634,9 @@ export default function Index() {
           {/* Loading state for Google Sheets data */}
           {isLoadingSheetData && (
             <div className="px-3 py-4 text-center">
-              <div className="text-sm text-gray-500 mb-2">Loading from Google Sheets...</div>
+              <div className="text-sm text-gray-500 mb-2">
+                Loading from Google Sheets...
+              </div>
               <div className="flex justify-center">
                 <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
               </div>
