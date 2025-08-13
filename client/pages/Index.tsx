@@ -49,47 +49,156 @@ export default function Index() {
   const [inputText, setInputText] = useState("");
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isLoadingSheetData, setIsLoadingSheetData] = useState(true);
+  const [sheetConversations, setSheetConversations] = useState<any[]>([]);
 
-  // Excel conversation data - Updated with new 4 conversations
-  const excelConversations = [
-    {
-      prompt: "protein bar with green inside\n\ncreate only 3 shot",
-      response:
-        '[{"shot_number":1,"title":"Reveal Shot","shot_type":"Reveal","shot_description":"A protein bar rests on a sleek, black marble surface with a hint of lush greenery in the background. Natural diffused lighting highlights the bar\'s contours. The camera angle is flat-lay, top-down. The theme is nature-meets-modern, using a color palette of deep greens and earthen tones to emphasize the product\'s unique inner ingredients.","camera_angle":"Flat-lay, Top-down","camera_motion":"None"},{"shot_number":2,"title":"Macro Shot","shot_type":"Macro","shot_description":"An extreme close-up zooms in on the textured surface of the protein bar, highlighting the granularity and ruggedness of the natural ingredients. Soft, side lighting accentuates the individual grains and embedded nuts. The camera slowly pans across the surface, creating a sense of earthy authenticity. The green inside is subtly visible at the corner, hinting at the vibrant, nutritious content.","camera_angle":"Extreme Close-up","camera_motion":"Slow Pan"},{"shot_number":3,"title":"Feature Shot","shot_type":"Feature","shot_description":"The bar splits in half, revealing its vibrant green inside filled with spirulina and pistachios. A subtle backlight illuminates the interior, creating a striking contrast with the exterior. The camera angle is medium close-up, capturing the split moment in slow motion to highlight the freshness and richness of the ingredients. The theme is about modern healthy eating with a focus on natural energy.","camera_angle":"Medium Close-up","camera_motion":"Slow Motion"}]',
-      imageLinks: [
-        "https://drive.google.com/file/d/1C8CgkJOJN7_N5vCVR2hwrgspWrCLRmoQ/view?usp=drivesdk",
-        "https://drive.google.com/file/d/1zeZqHR2N7uX-O4QxLtGtsVVNpdjLcHVU/view?usp=drivesdk",
-        "https://drive.google.com/file/d/1RKeE0TCKQirc7J0s-qEtGVL4bUMkzRET/view?usp=drivesdk",
-      ],
-    },
-    {
-      prompt: "create ad for a glass with 2 shot only",
-      response:
-        '[{"shot_number":1,"title":"Silhouette Shot","shot_type":"Silhouette","shot_description":"A finely crafted glass stands against a bright white background, its elegant shape and smooth curves highlighted as a stark silhouette. The lighting from behind is bright and uniform, leaving just an intriguing, dark outline of the glass. The shot focuses on the delicate contours and perfect symmetry, creating an aura of mystery and sophistication around the product.","camera_angle":"Side Profile","camera_motion":"Slow Orbit"},{"shot_number":2,"title":"Hero Shot","shot_type":"Hero","shot_description":"The glass is revealed in all its pristine glory, filled halfway with sparkling water that gently ripples with vibrant reflections of light. The top-down view emphasizes the clarity and thickness of the glass, showcasing its polished rim and the subtle patterns of light refracted through the water. The scene is brightly lit with a subtle warm tone, capturing every detail to highlight the craftsmanship and purity of the glass.","camera_angle":"Top-Down","camera_motion":"Slow Push-in"}]',
-      imageLinks: [
-        "https://drive.google.com/file/d/1ah5JiwfhF6BkJuibF0gzNBgE2gJ76Ktf/view?usp=drivesdk",
-        "https://drive.google.com/file/d/1b79LS8rZsLEQawiAaiqSlLoT7IqbZWU3/view?usp=drivesdk",
-      ],
-    },
-    {
-      prompt: "create ad for a airpod with 2 shot only",
-      response:
-        '[{"shot_number":1,"title":"Ease-of-Use Interaction","shot_type":"Interaction Shot","shot_description":"A sleek pair of AirPods rests in their polished, white charging case on a clean, modern desk surface. Soft, ambient lighting highlights the smooth curves and premium design of the case. As the camera gently pushes in for a medium close-up, a hand effortlessly opens the case, triggering the AirPods\' light indicator to subtly glow. The scene captures the seamless user experience of the AirPods being ready to pair instantly. The lighting is soft, emphasizing the product\'s seamless integration into daily life.","camera_angle":"Medium Close-Up","camera_motion":"Push-in"},{"shot_number":2,"title":"Audio Freedom","shot_type":"Hero Shot","shot_description":"The AirPods are suspended in mid-air against a minimalist, light background, gently rotating to showcase their glossy finish and ergonomic stem design. A subtle spotlight casts a halo effect, accentuating the elegant form and lightweight nature of the AirPods as they rotate in a dreamy slow-motion. This shot conveys a sense of limitless freedom and high-tech appeal, positioning the AirPods as a must-have lifestyle accessory. The mood is dreamy and aspirational, focusing on clean lines and the sophisticated design.","camera_angle":"Low Angle","camera_motion":"Slow Orbit"}]',
-      imageLinks: [
-        "https://drive.google.com/file/d/1NZTs-PEZF94ZQVpd-ivX-xD1RvdAHA0N/view?usp=drivesdk",
-        "https://drive.google.com/file/d/1tSNZvtFMu-LNzXcpdlyZZmnGe24ntj0s/view?usp=drivesdk",
-      ],
-    },
-    {
-      prompt: "create ad for a oneplus buds with 2 shot only",
-      response:
-        '[{"shot_number":1,"title":"Unboxing Teaser","shot_type":"Packaging Shot","shot_description":"A sleek, modern box of OnePlus Buds rests on a minimalist wooden table with diffuse natural light illuminating the textured surface. The camera is positioned overhead, capturing a hand that gently lifts the lid to reveal the pristine earbuds nestled inside their charging case. The movement is slow and deliberate, building anticipation. The lighting emphasizes the premium packaging design and the satisfaction of unboxing. The theme is sophisticated and minimalist, with clean lines and understated elegance.","camera_angle":"Overhead","camera_motion":"Slow reveal"},{"shot_number":2,"title":"Lifestyle Integration","shot_type":"Lifestyle Shot","shot_description":"The OnePlus Buds are shown in use, with one earbud gently placed in an ear while the other rests in the palm of a hand. The camera captures this intimate moment in soft focus, highlighting the ergonomic design and comfortable fit. Warm, natural lighting creates a cozy atmosphere, suggesting the earbuds\' role in enhancing daily life. The background is softly blurred, focusing attention on the product\'s seamless integration into the user\'s routine. The theme is personal and relatable, emphasizing comfort and everyday use.","camera_angle":"Close-up","camera_motion":"Gentle focus pull"}]',
-      imageLinks: [
-        "https://drive.google.com/file/d/1i8PifmgiZvmS-LZEXV1CqdnD2-eZTVx4/view?usp=drivesdk",
-        "https://drive.google.com/file/d/11YqLSJHaKHMU26m97MXuFGp-UZR2k4Kj/view?usp=drivesdk",
-      ],
-    },
-  ];
+  // Google Sheets configuration
+  const GOOGLE_SHEET_ID = "133ZHExWO_6Jfdmx_VRntJG_XJuy7wTXgepPs78yRuyg";
+  const SHEET_GID = "0";
+
+  // Function to fetch data from Google Sheets
+  const fetchGoogleSheetData = async () => {
+    try {
+      setIsLoadingSheetData(true);
+      console.log("Fetching Google Sheets data...");
+
+      // Use the CSV export URL with explicit parameters
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
+
+      console.log("CSV URL:", csvUrl);
+
+      const response = await fetch(csvUrl, {
+        method: "GET",
+        headers: {
+          Accept: "text/csv",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch sheet data: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const csvText = await response.text();
+      const rows = csvText.split("\n").filter((row) => row.trim());
+
+      console.log(`Found ${rows.length} rows in CSV`);
+
+      // Skip header row and parse data
+      const conversations = [];
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row.trim()) continue;
+
+        try {
+          // Parse CSV row (handle quoted values)
+          const columns = parseCSVRow(row);
+          console.log(
+            `Row ${i} parsed into ${columns.length} columns:`,
+            columns.map((col) => col.substring(0, 50) + "..."),
+          );
+
+          if (columns.length >= 1) {
+            const prompt = columns[0]?.trim() || "";
+            const response = columns[1]?.trim() || "";
+
+            // Parse image links from subsequent columns (columns 2, 3, 4, etc.)
+            const imageLinks = [];
+            for (let j = 2; j < columns.length; j++) {
+              const link = columns[j]?.trim();
+              if (link && link.includes("drive.google.com")) {
+                imageLinks.push(link);
+              }
+            }
+
+            // Only add if we have a valid prompt
+            if (
+              prompt &&
+              prompt.length > 0 &&
+              !prompt.includes("[{") &&
+              !prompt.includes("shot_number")
+            ) {
+              conversations.push({
+                prompt,
+                response,
+                imageLinks,
+              });
+              console.log(
+                `Added conversation: "${prompt.substring(0, 50)}..."`,
+              );
+            } else {
+              console.log(
+                `Skipped row ${i} - invalid prompt:`,
+                prompt.substring(0, 100),
+              );
+            }
+          }
+        } catch (error) {
+          console.error(
+            `Error parsing row ${i}:`,
+            error,
+            row.substring(0, 100),
+          );
+        }
+      }
+
+      setSheetConversations(conversations);
+      console.log(
+        `Loaded ${conversations.length} conversations from Google Sheets`,
+      );
+    } catch (error) {
+      console.error("Error fetching Google Sheets data:", error);
+      // Fallback to empty array
+      setSheetConversations([]);
+    } finally {
+      setIsLoadingSheetData(false);
+    }
+  };
+
+  // Improved CSV parser that handles quoted values and escaped quotes
+  const parseCSVRow = (row: string): string[] => {
+    const result = [];
+    let current = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+      const char = row[i];
+      const nextChar = row[i + 1];
+
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          // Handle escaped quotes ("")
+          current += '"';
+          i++; // Skip the next quote
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+        }
+      } else if (char === "," && !inQuotes) {
+        result.push(current.trim());
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+
+    result.push(current.trim());
+    return result;
+  };
+
+  // Load data on component mount and set up auto-refresh
+  useEffect(() => {
+    fetchGoogleSheetData();
+
+    // Auto-refresh every 5 minutes (300000ms)
+    const interval = setInterval(() => {
+      fetchGoogleSheetData();
+    }, 300000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
 
   // Function to convert Google Drive links to direct image URLs
   const convertGoogleDriveLink = (driveLink: string) => {
@@ -137,10 +246,10 @@ export default function Index() {
     return `https://images.unsplash.com/photo-${1500000000000 + index}?w=300&h=200&fit=crop`;
   };
 
-  // Function to create threads from Excel data
-  const createThreadsFromExcelData = () => {
-    return excelConversations.map((conv, index) => {
-      const threadId = `excel-new-${index + 1}`;
+  // Function to create threads from Google Sheets data
+  const createThreadsFromSheetData = () => {
+    return sheetConversations.map((conv, index) => {
+      const threadId = `sheet-${index + 1}`;
 
       // Create user message only
       const userMessage: Message = {
@@ -149,43 +258,50 @@ export default function Index() {
         isUser: true,
         uploadedImages: [],
         timestamp: new Date(
-          Date.now() - (excelConversations.length - index) * 60000,
+          Date.now() - (sheetConversations.length - index) * 60000,
         ),
       };
 
-      // Use the Google Drive image links from Excel data
+      // Use the Google Drive image links from sheet data
       const outputImages = conv.imageLinks
         ? conv.imageLinks.map(convertGoogleDriveLink)
         : [];
 
       return {
         id: threadId,
-        title:
-          conv.prompt.slice(0, 40) + (conv.prompt.length > 40 ? "..." : ""),
+        title: conv.prompt.slice(0, 80),
         messages: [userMessage], // Only user message, no AI response
         outputImages: outputImages,
         createdAt: new Date(
-          Date.now() - (excelConversations.length - index) * 60000,
+          Date.now() - (sheetConversations.length - index) * 60000,
         ),
         isFrozen: true,
       };
     });
   };
 
-  const [threads, setThreads] = useState<Thread[]>(() => {
-    const excelThreads = createThreadsFromExcelData();
-    return [
-      {
-        id: "1",
-        title: "New Chat",
-        createdAt: new Date(),
-        messages: [],
-        outputImages: [],
-        isFrozen: false,
-      },
-      ...excelThreads,
-    ];
-  });
+  const [threads, setThreads] = useState<Thread[]>([
+    {
+      id: "1",
+      title: "New Chat",
+      createdAt: new Date(),
+      messages: [],
+      outputImages: [],
+      isFrozen: false,
+    },
+  ]);
+
+  // Update threads when sheet data loads
+  useEffect(() => {
+    if (!isLoadingSheetData && sheetConversations.length > 0) {
+      const sheetThreads = createThreadsFromSheetData();
+      setThreads((prevThreads) => [
+        // Keep the "New Chat" thread at the top
+        prevThreads[0],
+        ...sheetThreads,
+      ]);
+    }
+  }, [isLoadingSheetData, sheetConversations]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -271,8 +387,7 @@ export default function Index() {
               messages: [...thread.messages, newMessage],
               title:
                 thread.messages.length === 0
-                  ? inputText.slice(0, 30) +
-                    (inputText.length > 30 ? "..." : "")
+                  ? inputText.slice(0, 80)
                   : thread.title,
               isFrozen: true,
             }
@@ -470,7 +585,7 @@ export default function Index() {
   }, [charIndex, promptIndex, isGenerating]);
 
   return (
-    <div className="h-screen bg-gray-100 flex">
+    <div className="h-screen bg-gray-100 flex font-sans">
       {/* Sidebar */}
       <div className="w-60 bg-gray-200 flex flex-col z-40">
         {/* Chat Icon */}
@@ -481,10 +596,10 @@ export default function Index() {
         </div>
 
         {/* New Chat Button */}
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-2">
           <button
             onClick={createNewChat}
-            className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
+            className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50 transition-colors"
           >
             New Chat
           </button>
@@ -500,27 +615,33 @@ export default function Index() {
                 setSelectedImageIndex(null);
               }}
               className={cn(
-                "px-3 py-2 text-sm cursor-pointer transition-colors rounded mb-1 group",
+                "px-3 py-3 text-sm font-medium cursor-pointer transition-colors rounded mb-1 group",
                 selectedThread === thread.id
-                  ? "bg-white text-black font-medium"
+                  ? "bg-white text-black font-semibold"
                   : "text-gray-600 hover:text-gray-800 hover:bg-gray-100",
               )}
               title={thread.messages[0]?.text || "New Chat"}
             >
-              <div className="truncate">{thread.title}</div>
+              <div className="line-clamp-2 leading-tight">{thread.title}</div>
+              {thread.id.startsWith("sheet-") && (
+                <div className="text-xs text-green-600 mt-1">
+                  📊 From Sheets
+                </div>
+              )}
 
-
-{/*               {thread.id.startsWith("excel-new-") && (
-                <div className="text-xs text-green-600 mt-1">✨ New Import</div>
-              )} */}
-              {thread.id.startsWith("excel-") &&
-                !thread.id.startsWith("excel-new-") && (
-                  <div className="text-xs text-blue-600 mt-1">
-                    📊 Old Import
-                  </div>
-                )}
-            </div>
           ))}
+
+          {/* Loading state for Google Sheets data */}
+          {isLoadingSheetData && (
+            <div className="px-3 py-4 text-center">
+              <div className="text-sm text-gray-500 mb-2">
+                Loading from Google Sheets...
+              </div>
+              <div className="flex justify-center">
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -644,7 +765,7 @@ export default function Index() {
                           : "bg-gray-100 text-gray-900",
                       )}
                     >
-                      <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-normal">
+                      <div className="whitespace-pre-wrap text-base leading-relaxed font-normal">
                         {message.text.includes("**Shot ") ? (
                           // Format shot descriptions with better styling
                           <div className="space-y-4">
@@ -708,7 +829,7 @@ export default function Index() {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.1s]"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-gray-600 font-medium">
                           Generating images...
                         </span>
                       </div>
@@ -760,7 +881,7 @@ export default function Index() {
                   placeholder={
                     placeholderText || "Start typing your prompt here..."
                   }
-                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
+                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-base min-h-[20px] max-h-48 bg-transparent text-gray-700 placeholder-gray-400 font-normal"
                   rows={1}
                   disabled={isGenerating || currentThread?.isFrozen}
                 />
