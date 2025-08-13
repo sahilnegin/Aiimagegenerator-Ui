@@ -537,12 +537,23 @@ export default function Index() {
         </div>
 
         {/* New Chat Button */}
-        <div className="px-4 pb-4">
+        <div className="px-4 pb-2">
           <button
             onClick={createNewChat}
             className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50 transition-colors"
           >
             New Chat
+          </button>
+        </div>
+
+        {/* Refresh Sheets Button */}
+        <div className="px-4 pb-4">
+          <button
+            onClick={fetchGoogleSheetData}
+            disabled={isLoadingSheetData}
+            className="w-full bg-blue-50 border border-blue-200 rounded px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors disabled:opacity-50"
+          >
+            {isLoadingSheetData ? "Loading..." : "Refresh Sheets"}
           </button>
         </div>
 
