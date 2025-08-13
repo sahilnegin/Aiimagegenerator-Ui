@@ -86,7 +86,7 @@ export default function Index() {
       console.log(`Found ${rows.length} rows in CSV`);
 
       // Skip header row and parse data
-      const conversations: Array<any> = [];
+      const conversations = [];
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
         if (!row.trim()) continue;
@@ -100,15 +100,69 @@ export default function Index() {
           );
 
           if (columns.length >= 1) {
-            const prompt = columns[0]?.trim() || "";
-            const response = columns[1]?.trim() || "";
+            const prompt = columns[0]?.trim() || ""; // Input Prompt
+            const response = columns[1]?.trim() || ""; // Agent Output
+            const imageColumn = columns[2]?.trim() || ""; // Image Link column
 
-            // Parse image links from subsequent columns (columns 2, 3, 4, etc.)
-            const imageLinks: string[] = [];
-            for (let j = 2; j < columns.length; j++) {
-              const link = columns[j]?.trim();
-              if (link && link.includes("drive.google.com")) {
-                imageLinks.push(link);
+            // Parse image links from the Image Link column (column 2)
+            const imageLinks = [];
+            console.log(
+              `Row ${i} Image column content:`,
+              imageColumn.substring(0, 200),
+            );
+
+            if (imageColumn) {
+              // Check if the cell contains an array (JSON format)
+              if (imageColumn.startsWith("[") && imageColumn.endsWith("]")) {
+                try {
+                  const parsedArray = JSON.parse(imageColumn);
+                  if (Array.isArray(parsedArray)) {
+                    console.log(
+                      `Found JSON array with ${parsedArray.length} items:`,
+                      parsedArray,
+                    );
+                    parsedArray.forEach((link) => {
+                      if (
+                        typeof link === "string" &&
+                        (link.includes("drive.google.com") ||
+                          link.includes("http"))
+                      ) {
+                        imageLinks.push(link);
+                        console.log(`Added from JSON array:`, link);
+                      }
+                    });
+                  }
+                } catch (e) {
+                  console.log(
+                    `Failed to parse JSON array in image column: ${imageColumn.substring(0, 50)}...`,
+                  );
+                }
+              }
+              // Check if it's a single Google Drive link or any HTTP link
+              else if (
+                imageColumn.includes("drive.google.com") ||
+                imageColumn.includes("http")
+              ) {
+                imageLinks.push(imageColumn);
+                console.log(`Added single image link:`, imageColumn);
+              }
+              // Check if it's comma-separated links
+              else if (
+                imageColumn.includes(",") &&
+                (imageColumn.includes("drive.google.com") ||
+                  imageColumn.includes("http"))
+              ) {
+                const links = imageColumn.split(",").map((link) => link.trim());
+                console.log(`Found comma-separated links:`, links);
+                links.forEach((link) => {
+                  if (
+                    link.includes("drive.google.com") ||
+                    link.includes("http")
+                  ) {
+                    imageLinks.push(link);
+                    console.log(`Added from comma-separated:`, link);
+                  }
+                });
               }
             }
 
@@ -124,8 +178,19 @@ export default function Index() {
                 response,
                 imageLinks,
               });
+
+              // Special logging for protein bar conversation
+              if (prompt.toLowerCase().includes("protein")) {
+                console.log("🟢 PROTEIN BAR CONVERSATION FOUND:");
+                console.log("- Prompt:", prompt);
+                console.log("- Image column content:", imageColumn);
+                console.log("- Parsed image links:", imageLinks);
+                console.log("- Raw row data:", columns);
+              }
+
               console.log(
-                `Added conversation: "${prompt.substring(0, 50)}..."`,
+                `Added conversation: "${prompt.substring(0, 50)}..." with ${imageLinks.length} images`,
+                imageLinks.length > 0 ? imageLinks : "No images found",
               );
             } else {
               console.log(
@@ -158,7 +223,7 @@ export default function Index() {
 
   // Improved CSV parser that handles quoted values and escaped quotes
   const parseCSVRow = (row: string): string[] => {
-    const result: string[] = [];
+    const result = [];
     let current = "";
     let inQuotes = false;
 
@@ -187,67 +252,88 @@ export default function Index() {
     return result;
   };
 
-  // Load data on component mount and set up auto-refresh
+  // Load data on component mount and refresh on page reload
   useEffect(() => {
     fetchGoogleSheetData();
-
-    // Auto-refresh every 5 minutes (300000ms)
-    const interval = setInterval(() => {
-      fetchGoogleSheetData();
-    }, 300000);
-
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
   }, []);
 
-  // Function to generate multiple Drive URL variants for a fileId
-  const getDriveVariants = (fileId: string) => {
-    return [
-      `https://drive.google.com/uc?export=view&id=${fileId}`,
-      `https://drive.google.com/uc?export=download&id=${fileId}`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h600`,
-      // sometimes googleusercontent links work
-      `https://lh3.googleusercontent.com/d/${fileId}=w800-h600`,
-    ];
-  };
+  // Fetch data when page gains focus (user returns to tab)
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchGoogleSheetData();
+    };
 
-  // Extract fileId from many possible Google Drive URL formats
-  const extractFileIdFromUrl = (url: string): string | null => {
-    if (!url) return null;
-    // try id= query param
-    const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (idMatch) return idMatch[1];
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, []);
 
-    // try /d/<id>/ pattern
-    const dMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (dMatch) return dMatch[1];
+  // Fetch data when page becomes visible again
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchGoogleSheetData();
+      }
+    };
 
-    // try share link that ends with fileId
-    const shareMatch = url.match(/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (shareMatch) return shareMatch[1];
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
 
-    // try direct googleusercontent pattern
-    const gMatch = url.match(/id=([a-zA-Z0-9_-]+)/);
-    if (gMatch) return gMatch[1];
-
-    return null;
-  };
-
-  // Function to convert Google Drive links to a preferred direct image URL
+  // Function to convert Google Drive links to direct image URLs
   const convertGoogleDriveLink = (driveLink: string) => {
+    if (!driveLink || typeof driveLink !== "string") {
+      console.log("Invalid drive link:", driveLink);
+      return driveLink;
+    }
+
+    console.log("Converting Google Drive link:", driveLink);
+
     if (driveLink.includes("drive.google.com")) {
-      const fileId = driveLink.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      let fileId = null;
+
+      // Try multiple patterns to extract file ID
+      const patterns = [
+        /\/file\/d\/([a-zA-Z0-9-_]+)/, // /file/d/ID/view or /file/d/ID/edit
+        /\/d\/([a-zA-Z0-9-_]+)/, // /d/ID
+        /[?&]id=([a-zA-Z0-9-_]+)/, // ?id=ID or &id=ID
+        /\/([a-zA-Z0-9-_]{25,})(?:\/|$)/, // Just a long ID in the URL
+      ];
+
+      for (const pattern of patterns) {
+        const match = driveLink.match(pattern);
+        if (match && match[1]) {
+          fileId = match[1];
+          break;
+        }
+      }
+
       if (fileId) {
-        // prefer uc view first
-        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+        // Try the most reliable format for public images
+        const convertedUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
+        console.log(`Converted ${driveLink} -> ${convertedUrl}`);
+        return convertedUrl;
+      } else {
+        console.log("Could not extract file ID from:", driveLink);
       }
     }
+
+    // If it's already a direct image URL, return as is
+    if (
+      driveLink.includes("googleusercontent.com") ||
+      driveLink.includes("uc?export=view") ||
+      driveLink.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+    ) {
+      return driveLink;
+    }
+
+    console.log("Link not converted:", driveLink);
     return driveLink;
   };
 
   // Fallback images for when Google Drive links fail
   const getFallbackImage = (index: number, prompt: string) => {
-    const fallbackImages: { [k: string]: string[] } = {
+    const fallbackImages = {
       protein: [
         "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=200&fit=crop",
         "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=200&fit=crop",
@@ -267,11 +353,14 @@ export default function Index() {
       ],
     };
 
-    const lowerPrompt = prompt.toLowerCase();
-    if (lowerPrompt.includes("protein")) return fallbackImages.protein[index % fallbackImages.protein.length];
-    if (lowerPrompt.includes("glass")) return fallbackImages.glass[index % fallbackImages.glass.length];
-    if (lowerPrompt.includes("airpod")) return fallbackImages.airpod[index % fallbackImages.airpod.length];
-    if (lowerPrompt.includes("oneplus")) return fallbackImages.oneplus[index % fallbackImages.oneplus.length];
+    if (prompt.includes("protein"))
+      return fallbackImages.protein[index % fallbackImages.protein.length];
+    if (prompt.includes("glass"))
+      return fallbackImages.glass[index % fallbackImages.glass.length];
+    if (prompt.includes("airpod"))
+      return fallbackImages.airpod[index % fallbackImages.airpod.length];
+    if (prompt.includes("oneplus"))
+      return fallbackImages.oneplus[index % fallbackImages.oneplus.length];
 
     return `https://images.unsplash.com/photo-${1500000000000 + index}?w=300&h=200&fit=crop`;
   };
@@ -292,10 +381,16 @@ export default function Index() {
         ),
       };
 
-      // Use the Google Drive image links from sheet data (convert to direct view URL)
+      // Use the Google Drive image links from sheet data
       const outputImages = conv.imageLinks
         ? conv.imageLinks.map(convertGoogleDriveLink)
         : [];
+
+      console.log(`Thread "${threadId}":`, {
+        originalLinks: conv.imageLinks,
+        convertedLinks: outputImages,
+        linkCount: outputImages.length,
+      });
 
       return {
         id: threadId,
@@ -325,6 +420,12 @@ export default function Index() {
   useEffect(() => {
     if (!isLoadingSheetData && sheetConversations.length > 0) {
       const sheetThreads = createThreadsFromSheetData();
+      console.log(`Creating ${sheetThreads.length} threads from sheet data`);
+      sheetThreads.forEach((thread, index) => {
+        console.log(
+          `Thread ${index + 1}: "${thread.title.substring(0, 30)}..." with ${thread.outputImages.length} images`,
+        );
+      });
       setThreads((prevThreads) => [
         // Keep the "New Chat" thread at the top
         prevThreads[0],
@@ -527,8 +628,8 @@ export default function Index() {
     } catch (error) {
       console.error("Error submitting to n8n webhook:", error);
       console.error("Error details:", {
-        message: (error as Error).message,
-        stack: (error as Error).stack,
+        message: error.message,
+        stack: error.stack,
         inputText: currentInputText,
         hasImages: currentUploadedImages.length > 0,
       });
@@ -613,34 +714,7 @@ export default function Index() {
       return () => clearTimeout(timeout);
     }
   }, [charIndex, promptIndex, isGenerating]);
-
-  // Helper to attempt the next variant for a google drive image when an error occurs
-  const tryNextDriveVariant = (img: HTMLImageElement, index: number, threadTitle: string) => {
-    const fileId = extractFileIdFromUrl(img.dataset?.fileId || img.src || '');
-    if (!fileId) return false;
-
-    const variants = getDriveVariants(fileId);
-
-    // find which variant we are currently using (best-effort)
-    let currentIndex = variants.findIndex((v) => v === img.src || img.src.includes(v) || v.includes(img.src));
-    if (currentIndex === -1) {
-      // if we don't recognize current src, try to pick the first variant that isn't equal to src
-      currentIndex = variants.findIndex((v) => !img.src.includes(v));
-      if (currentIndex === -1) currentIndex = 0;
-      else currentIndex = -1; // so nextIndex becomes 0
-    }
-
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < variants.length) {
-      img.src = variants[nextIndex];
-      // set data-file-id so subsequent errors can still find fileId
-      img.dataset.fileId = fileId;
-      return true;
-    }
-
-    return false;
-  };
-
+  
   return (
     <div className="h-screen bg-gray-100 flex font-sans">
       {/* Sidebar */}
@@ -680,7 +754,7 @@ export default function Index() {
               title={thread.messages[0]?.text || "New Chat"}
             >
               <div className="line-clamp-2 leading-tight">{thread.title}</div>
-              </div>
+            </div>
           ))}
 
           {/* Loading state for Google Sheets data */}
@@ -694,11 +768,19 @@ export default function Index() {
               </div>
             </div>
           )}
+
+          {/* Status section */}
+          <div className="px-3 py-2 border-t border-gray-300 mt-2">
+            <div className="text-xs text-gray-500 text-center">
+              {sheetConversations.length} conversations loaded
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 bg-white flex flex-col">
+
         {/* Image Gallery at Top */}
         <div className="h-32 bg-gray-50 border-b border-gray-200 p-4">
           {currentThread?.outputImages &&
@@ -725,50 +807,57 @@ export default function Index() {
                 ref={galleryRef}
                 className="flex gap-3 overflow-x-auto scrollbar-hide h-full justify-center"
               >
-                {currentThread.outputImages.map((image, index) => {
-                  const fileId = extractFileIdFromUrl(image);
-                  return (
-                    <div
-                      key={index}
-                      className={cn(
-                        "flex-shrink-0 cursor-pointer transition-all duration-200 h-full border-2 rounded",
-                        selectedImageIndex === index
-                          ? "border-gray-400"
-                          : "border-transparent hover:border-gray-300",
-                      )}
-                      onClick={() =>
-                        setSelectedImageIndex(
-                          selectedImageIndex === index ? null : index,
-                        )
-                      }
-                    >
-                      <img
-                        src={image}
-                        alt={`Generated image ${index + 1}`}
-                        className="h-full w-24 object-cover rounded bg-gray-200"
-                        data-file-id={fileId || ''}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
+                {currentThread.outputImages.map((image, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "flex-shrink-0 cursor-pointer transition-all duration-200 h-full border-2 rounded",
+                      selectedImageIndex === index
+                        ? "border-gray-400"
+                        : "border-transparent hover:border-gray-300",
+                    )}
+                    onClick={() =>
+                      setSelectedImageIndex(
+                        selectedImageIndex === index ? null : index,
+                      )
+                    }
+                  >
+                    <img
+                      src={image}
+                      alt={`Generated image ${index + 1}`}
+                      className="h-full w-24 object-cover rounded bg-gray-200"
+                      onLoad={(e) => {
+                        console.log(
+                          `Image ${index + 1} loaded successfully:`,
+                          image,
+                        );
+                        const target = e.target as HTMLImageElement;
+                        target.style.opacity = "1";
+                      }}
+                      onError={(e) => {
+                        console.error(
+                          `Image ${index + 1} failed to load:`,
+                          image,
+                        );
+                        const target = e.target as HTMLImageElement;
+                        target.style.opacity = "0.5";
+                        target.title = `Failed to load: ${image}`;
 
-                          // Try alternate Google Drive variants first
-                          const tried = tryNextDriveVariant(target, index, currentThread?.title || "");
-                          if (tried) return; // we set a new src, wait for next onError if that fails
-
-                          // Otherwise set a meaningful fallback
-                          if (
-                            target.src !==
-                            getFallbackImage(index, currentThread?.title || "")
-                          ) {
-                            target.src = getFallbackImage(
-                              index,
-                              currentThread?.title || "",
-                            );
-                          }
-                        }}
-                      />
-                    </div>
-                  );
-                })}
+                        if (
+                          target.src !==
+                          getFallbackImage(index, currentThread?.title || "")
+                        ) {
+                          console.log(`Using fallback for image ${index + 1}`);
+                          target.src = getFallbackImage(
+                            index,
+                            currentThread?.title || "",
+                          );
+                        }
+                      }}
+                      style={{ opacity: 0.7, transition: "opacity 0.3s" }}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           ) : (
@@ -792,22 +881,17 @@ export default function Index() {
                   src={currentThread.outputImages[selectedImageIndex]}
                   alt="Selected image"
                   className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
-                  data-file-id={extractFileIdFromUrl(currentThread.outputImages[selectedImageIndex]) || ''}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-
-                    const tried = tryNextDriveVariant(target, selectedImageIndex as number, currentThread?.title || "");
-                    if (tried) return;
-
                     if (
                       target.src !==
                       getFallbackImage(
-                        selectedImageIndex as number,
+                        selectedImageIndex,
                         currentThread?.title || "",
                       )
                     ) {
                       target.src = getFallbackImage(
-                        selectedImageIndex as number,
+                        selectedImageIndex,
                         currentThread?.title || "",
                       );
                     }
