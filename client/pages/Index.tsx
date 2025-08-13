@@ -262,7 +262,8 @@ export default function Index() {
       }
 
       if (fileId) {
-        const convertedUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+        // Try the most reliable format for public images
+        const convertedUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
         console.log(`Converted ${driveLink} -> ${convertedUrl}`);
         return convertedUrl;
       } else {
@@ -271,7 +272,7 @@ export default function Index() {
     }
 
     // If it's already a direct image URL, return as is
-    if (driveLink.includes('uc?export=view') || driveLink.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+    if (driveLink.includes('googleusercontent.com') || driveLink.includes('uc?export=view') || driveLink.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
       return driveLink;
     }
 
