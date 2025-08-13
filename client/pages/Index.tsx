@@ -152,7 +152,8 @@ export default function Index() {
                 imageLinks,
               });
               console.log(
-                `Added conversation: "${prompt.substring(0, 50)}..."`,
+                `Added conversation: "${prompt.substring(0, 50)}..." with ${imageLinks.length} images`,
+                imageLinks.length > 0 ? imageLinks : 'No images found'
               );
             } else {
               console.log(
