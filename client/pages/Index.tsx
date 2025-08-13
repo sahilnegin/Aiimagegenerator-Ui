@@ -166,9 +166,17 @@ export default function Index() {
     return result;
   };
 
-  // Load data on component mount
+  // Load data on component mount and set up auto-refresh
   useEffect(() => {
     fetchGoogleSheetData();
+
+    // Auto-refresh every 5 minutes (300000ms)
+    const interval = setInterval(() => {
+      fetchGoogleSheetData();
+    }, 300000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, []);
 
   // Function to convert Google Drive links to direct image URLs
