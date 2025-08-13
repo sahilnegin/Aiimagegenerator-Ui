@@ -105,18 +105,24 @@ export default function Index() {
 
             // Parse image links from subsequent columns (columns 2, 3, 4, etc.)
             const imageLinks = [];
+            console.log(`Row ${i} has ${columns.length} columns:`, columns.map(col => col.substring(0, 30) + '...'));
+
             for (let j = 2; j < columns.length; j++) {
               const cellContent = columns[j]?.trim();
               if (!cellContent) continue;
+
+              console.log(`Column ${j} content:`, cellContent.substring(0, 100));
 
               // Check if the cell contains an array (JSON format)
               if (cellContent.startsWith('[') && cellContent.endsWith(']')) {
                 try {
                   const parsedArray = JSON.parse(cellContent);
                   if (Array.isArray(parsedArray)) {
+                    console.log(`Found JSON array with ${parsedArray.length} items:`, parsedArray);
                     parsedArray.forEach(link => {
-                      if (typeof link === 'string' && link.includes("drive.google.com")) {
+                      if (typeof link === 'string' && (link.includes("drive.google.com") || link.includes("http"))) {
                         imageLinks.push(link);
+                        console.log(`Added from JSON array:`, link);
                       }
                     });
                   }
@@ -124,16 +130,19 @@ export default function Index() {
                   console.log(`Failed to parse JSON array in cell: ${cellContent.substring(0, 50)}...`);
                 }
               }
-              // Check if it's a single Google Drive link
-              else if (cellContent.includes("drive.google.com")) {
+              // Check if it's a single Google Drive link or any HTTP link
+              else if (cellContent.includes("drive.google.com") || cellContent.includes("http")) {
                 imageLinks.push(cellContent);
+                console.log(`Added single link:`, cellContent);
               }
               // Check if it's comma-separated links
-              else if (cellContent.includes(',') && cellContent.includes("drive.google.com")) {
+              else if (cellContent.includes(',') && (cellContent.includes("drive.google.com") || cellContent.includes("http"))) {
                 const links = cellContent.split(',').map(link => link.trim());
+                console.log(`Found comma-separated links:`, links);
                 links.forEach(link => {
-                  if (link.includes("drive.google.com")) {
+                  if (link.includes("drive.google.com") || link.includes("http")) {
                     imageLinks.push(link);
+                    console.log(`Added from comma-separated:`, link);
                   }
                 });
               }
