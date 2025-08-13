@@ -60,11 +60,22 @@ export default function Index() {
   const fetchGoogleSheetData = async () => {
     try {
       setIsLoadingSheetData(true);
-      const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+      console.log('Fetching Google Sheets data...');
 
-      const response = await fetch(csvUrl);
+      // Use the CSV export URL with explicit parameters
+      const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
+
+      console.log('CSV URL:', csvUrl);
+
+      const response = await fetch(csvUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/csv',
+        },
+      });
+
       if (!response.ok) {
-        throw new Error(`Failed to fetch sheet data: ${response.status}`);
+        throw new Error(`Failed to fetch sheet data: ${response.status} ${response.statusText}`);
       }
 
       const csvText = await response.text();
