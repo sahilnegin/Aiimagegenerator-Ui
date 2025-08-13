@@ -764,6 +764,22 @@ export default function Index() {
             >
               📋 Show Raw CSV
             </button>
+            <button
+              onClick={() => {
+                console.log('=== ALL PARSED CONVERSATIONS ===');
+                sheetConversations.forEach((conv, index) => {
+                  console.log(`Conversation ${index + 1}:`);
+                  console.log('- Prompt:', conv.prompt);
+                  console.log('- Response:', conv.response?.substring(0, 100) + '...');
+                  console.log('- Image Links:', conv.imageLinks);
+                  console.log('---');
+                });
+                alert('All conversations logged to console - check F12 Console tab');
+              }}
+              className="w-full text-xs text-purple-600 hover:text-purple-800 py-1 px-2 bg-purple-50 hover:bg-purple-100 rounded transition-colors"
+            >
+              🔍 Show All Conversations
+            </button>
             <div className="text-xs text-gray-500 text-center">
               {sheetConversations.length} conversations loaded
             </div>
