@@ -665,6 +665,20 @@ export default function Index() {
               </div>
             </div>
           )}
+
+          {/* Debug and refresh section */}
+          <div className="px-3 py-2 border-t border-gray-300 mt-2">
+            <button
+              onClick={fetchGoogleSheetData}
+              disabled={isLoadingSheetData}
+              className="w-full text-xs text-blue-600 hover:text-blue-800 py-1 px-2 bg-blue-50 hover:bg-blue-100 rounded transition-colors disabled:opacity-50"
+            >
+              🔄 Refresh Sheet Data
+            </button>
+            <div className="text-xs text-gray-500 mt-1 text-center">
+              {sheetConversations.length} conversations loaded
+            </div>
+          </div>
         </div>
       </div>
 
