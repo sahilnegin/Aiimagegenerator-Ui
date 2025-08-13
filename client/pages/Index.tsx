@@ -221,20 +221,28 @@ export default function Index() {
     });
   };
 
-  const [threads, setThreads] = useState<Thread[]>(() => {
-    const excelThreads = createThreadsFromExcelData();
-    return [
-      {
-        id: "1",
-        title: "New Chat",
-        createdAt: new Date(),
-        messages: [],
-        outputImages: [],
-        isFrozen: false,
-      },
-      ...excelThreads,
-    ];
-  });
+  const [threads, setThreads] = useState<Thread[]>([
+    {
+      id: "1",
+      title: "New Chat",
+      createdAt: new Date(),
+      messages: [],
+      outputImages: [],
+      isFrozen: false,
+    },
+  ]);
+
+  // Update threads when sheet data loads
+  useEffect(() => {
+    if (!isLoadingSheetData && sheetConversations.length > 0) {
+      const sheetThreads = createThreadsFromSheetData();
+      setThreads(prevThreads => [
+        // Keep the "New Chat" thread at the top
+        prevThreads[0],
+        ...sheetThreads,
+      ]);
+    }
+  }, [isLoadingSheetData, sheetConversations]);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
