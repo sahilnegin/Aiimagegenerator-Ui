@@ -335,6 +335,10 @@ export default function Index() {
   useEffect(() => {
     if (!isLoadingSheetData && sheetConversations.length > 0) {
       const sheetThreads = createThreadsFromSheetData();
+      console.log(`Creating ${sheetThreads.length} threads from sheet data`);
+      sheetThreads.forEach((thread, index) => {
+        console.log(`Thread ${index + 1}: "${thread.title.substring(0, 30)}..." with ${thread.outputImages.length} images`);
+      });
       setThreads((prevThreads) => [
         // Keep the "New Chat" thread at the top
         prevThreads[0],
