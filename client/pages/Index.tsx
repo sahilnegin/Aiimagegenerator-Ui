@@ -623,12 +623,7 @@ export default function Index() {
               title={thread.messages[0]?.text || "New Chat"}
             >
               <div className="line-clamp-2 leading-tight">{thread.title}</div>
-              {thread.id.startsWith("sheet-") && (
-                <div className="text-xs text-green-600 mt-1">
-                  📊 From Sheets
-                </div>
-              )}
-
+              </div>
           ))}
 
           {/* Loading state for Google Sheets data */}
