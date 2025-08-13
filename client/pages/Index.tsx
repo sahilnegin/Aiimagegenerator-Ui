@@ -113,7 +113,7 @@ export default function Index() {
     }
   };
 
-  // Simple CSV parser that handles quoted values
+  // Improved CSV parser that handles quoted values and escaped quotes
   const parseCSVRow = (row: string): string[] => {
     const result = [];
     let current = '';
@@ -121,19 +121,27 @@ export default function Index() {
 
     for (let i = 0; i < row.length; i++) {
       const char = row[i];
+      const nextChar = row[i + 1];
 
       if (char === '"') {
-        inQuotes = !inQuotes;
+        if (inQuotes && nextChar === '"') {
+          // Handle escaped quotes ("")
+          current += '"';
+          i++; // Skip the next quote
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+        }
       } else if (char === ',' && !inQuotes) {
-        result.push(current);
+        result.push(current.trim());
         current = '';
       } else {
         current += char;
       }
     }
 
-    result.push(current);
-    return result.map(cell => cell.replace(/^"|"$/g, '')); // Remove surrounding quotes
+    result.push(current.trim());
+    return result;
   };
 
   // Load data on component mount
