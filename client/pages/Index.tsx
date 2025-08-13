@@ -716,7 +716,7 @@ export default function Index() {
           )}
 
           {/* Debug and refresh section */}
-          <div className="px-3 py-2 border-t border-gray-300 mt-2">
+          <div className="px-3 py-2 border-t border-gray-300 mt-2 space-y-1">
             <button
               onClick={fetchGoogleSheetData}
               disabled={isLoadingSheetData}
@@ -724,7 +724,24 @@ export default function Index() {
             >
               🔄 Refresh Sheet Data
             </button>
-            <div className="text-xs text-gray-500 mt-1 text-center">
+            <button
+              onClick={async () => {
+                try {
+                  const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
+                  const response = await fetch(csvUrl);
+                  const csvText = await response.text();
+                  console.log('Raw CSV data:', csvText);
+                  alert('CSV data logged to console - check F12 Console tab');
+                } catch (error) {
+                  console.error('Failed to fetch CSV:', error);
+                  alert('Failed to fetch CSV: ' + error.message);
+                }
+              }}
+              className="w-full text-xs text-green-600 hover:text-green-800 py-1 px-2 bg-green-50 hover:bg-green-100 rounded transition-colors"
+            >
+              📋 Show Raw CSV
+            </button>
+            <div className="text-xs text-gray-500 text-center">
               {sheetConversations.length} conversations loaded
             </div>
           </div>
