@@ -106,9 +106,36 @@ export default function Index() {
             // Parse image links from subsequent columns (columns 2, 3, 4, etc.)
             const imageLinks = [];
             for (let j = 2; j < columns.length; j++) {
-              const link = columns[j]?.trim();
-              if (link && link.includes("drive.google.com")) {
-                imageLinks.push(link);
+              const cellContent = columns[j]?.trim();
+              if (!cellContent) continue;
+
+              // Check if the cell contains an array (JSON format)
+              if (cellContent.startsWith('[') && cellContent.endsWith(']')) {
+                try {
+                  const parsedArray = JSON.parse(cellContent);
+                  if (Array.isArray(parsedArray)) {
+                    parsedArray.forEach(link => {
+                      if (typeof link === 'string' && link.includes("drive.google.com")) {
+                        imageLinks.push(link);
+                      }
+                    });
+                  }
+                } catch (e) {
+                  console.log(`Failed to parse JSON array in cell: ${cellContent.substring(0, 50)}...`);
+                }
+              }
+              // Check if it's a single Google Drive link
+              else if (cellContent.includes("drive.google.com")) {
+                imageLinks.push(cellContent);
+              }
+              // Check if it's comma-separated links
+              else if (cellContent.includes(',') && cellContent.includes("drive.google.com")) {
+                const links = cellContent.split(',').map(link => link.trim());
+                links.forEach(link => {
+                  if (link.includes("drive.google.com")) {
+                    imageLinks.push(link);
+                  }
+                });
               }
             }
 
