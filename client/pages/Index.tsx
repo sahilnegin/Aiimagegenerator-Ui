@@ -160,8 +160,7 @@ export default function Index() {
 
       return {
         id: threadId,
-        title:
-          conv.prompt.slice(0, 40) + (conv.prompt.length > 40 ? "..." : ""),
+        title: conv.prompt.slice(0, 80),
         messages: [userMessage], // Only user message, no AI response
         outputImages: outputImages,
         createdAt: new Date(
@@ -271,8 +270,7 @@ export default function Index() {
               messages: [...thread.messages, newMessage],
               title:
                 thread.messages.length === 0
-                  ? inputText.slice(0, 30) +
-                    (inputText.length > 30 ? "..." : "")
+                  ? inputText.slice(0, 80)
                   : thread.title,
               isFrozen: true,
             }
