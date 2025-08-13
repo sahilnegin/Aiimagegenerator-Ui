@@ -70,35 +70,46 @@ export default function Index() {
       const csvText = await response.text();
       const rows = csvText.split('\n').filter(row => row.trim());
 
+      console.log(`Found ${rows.length} rows in CSV`);
+
       // Skip header row and parse data
       const conversations = [];
       for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
         if (!row.trim()) continue;
 
-        // Parse CSV row (handle quoted values)
-        const columns = parseCSVRow(row);
+        try {
+          // Parse CSV row (handle quoted values)
+          const columns = parseCSVRow(row);
+          console.log(`Row ${i} parsed into ${columns.length} columns:`, columns.map(col => col.substring(0, 50) + '...'));
 
-        if (columns.length >= 2) {
-          const prompt = columns[0]?.trim() || "";
-          const response = columns[1]?.trim() || "";
+          if (columns.length >= 1) {
+            const prompt = columns[0]?.trim() || "";
+            const response = columns[1]?.trim() || "";
 
-          // Parse image links from subsequent columns (columns 2, 3, 4, etc.)
-          const imageLinks = [];
-          for (let j = 2; j < columns.length; j++) {
-            const link = columns[j]?.trim();
-            if (link && link.includes('drive.google.com')) {
-              imageLinks.push(link);
+            // Parse image links from subsequent columns (columns 2, 3, 4, etc.)
+            const imageLinks = [];
+            for (let j = 2; j < columns.length; j++) {
+              const link = columns[j]?.trim();
+              if (link && link.includes('drive.google.com')) {
+                imageLinks.push(link);
+              }
+            }
+
+            // Only add if we have a valid prompt
+            if (prompt && prompt.length > 0 && !prompt.includes('[{') && !prompt.includes('shot_number')) {
+              conversations.push({
+                prompt,
+                response,
+                imageLinks
+              });
+              console.log(`Added conversation: "${prompt.substring(0, 50)}..."`);
+            } else {
+              console.log(`Skipped row ${i} - invalid prompt:`, prompt.substring(0, 100));
             }
           }
-
-          if (prompt) {
-            conversations.push({
-              prompt,
-              response,
-              imageLinks
-            });
-          }
+        } catch (error) {
+          console.error(`Error parsing row ${i}:`, error, row.substring(0, 100));
         }
       }
 
