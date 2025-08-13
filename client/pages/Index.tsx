@@ -500,14 +500,14 @@ export default function Index() {
                 setSelectedImageIndex(null);
               }}
               className={cn(
-                "px-3 py-2 text-sm font-medium cursor-pointer transition-colors rounded mb-1 group",
+                "px-3 py-3 text-sm font-medium cursor-pointer transition-colors rounded mb-1 group",
                 selectedThread === thread.id
                   ? "bg-white text-black font-semibold"
                   : "text-gray-600 hover:text-gray-800 hover:bg-gray-100",
               )}
               title={thread.messages[0]?.text || "New Chat"}
             >
-              <div className="truncate">{thread.title}</div>
+              <div className="line-clamp-2 leading-tight">{thread.title}</div>
               {thread.id.startsWith("excel-new-") && (
                 <div className="text-xs text-green-600 mt-1">✨ New Import</div>
               )}
