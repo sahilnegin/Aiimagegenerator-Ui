@@ -576,16 +576,6 @@ export default function Index() {
           </button>
         </div>
 
-        {/* Refresh Sheets Button */}
-        <div className="px-4 pb-4">
-          <button
-            onClick={fetchGoogleSheetData}
-            disabled={isLoadingSheetData}
-            className="w-full bg-blue-50 border border-blue-200 rounded px-3 py-2 text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors disabled:opacity-50"
-          >
-            {isLoadingSheetData ? "Loading..." : "Refresh Sheets"}
-          </button>
-        </div>
 
         {/* Thread List */}
         <div className="flex-1 overflow-y-auto px-4">
