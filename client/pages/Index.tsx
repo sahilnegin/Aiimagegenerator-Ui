@@ -782,18 +782,29 @@ export default function Index() {
                       src={image}
                       alt={`Generated image ${index + 1}`}
                       className="h-full w-24 object-cover rounded bg-gray-200"
-                      onError={(e) => {
+                      onLoad={(e) => {
+                        console.log(`Image ${index + 1} loaded successfully:`, image);
                         const target = e.target as HTMLImageElement;
+                        target.style.opacity = '1';
+                      }}
+                      onError={(e) => {
+                        console.error(`Image ${index + 1} failed to load:`, image);
+                        const target = e.target as HTMLImageElement;
+                        target.style.opacity = '0.5';
+                        target.title = `Failed to load: ${image}`;
+
                         if (
                           target.src !==
                           getFallbackImage(index, currentThread?.title || "")
                         ) {
+                          console.log(`Using fallback for image ${index + 1}`);
                           target.src = getFallbackImage(
                             index,
                             currentThread?.title || "",
                           );
                         }
                       }}
+                      style={{ opacity: 0.7, transition: 'opacity 0.3s' }}
                     />
                   </div>
                 ))}
