@@ -628,7 +628,7 @@ export default function Index() {
                   📊 From Sheets
                 </div>
               )}
-            </div>
+
           ))}
 
           {/* Loading state for Google Sheets data */}
