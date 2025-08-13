@@ -187,10 +187,10 @@ export default function Index() {
     return `https://images.unsplash.com/photo-${1500000000000 + index}?w=300&h=200&fit=crop`;
   };
 
-  // Function to create threads from Excel data
-  const createThreadsFromExcelData = () => {
-    return excelConversations.map((conv, index) => {
-      const threadId = `excel-new-${index + 1}`;
+  // Function to create threads from Google Sheets data
+  const createThreadsFromSheetData = () => {
+    return sheetConversations.map((conv, index) => {
+      const threadId = `sheet-${index + 1}`;
 
       // Create user message only
       const userMessage: Message = {
@@ -199,11 +199,11 @@ export default function Index() {
         isUser: true,
         uploadedImages: [],
         timestamp: new Date(
-          Date.now() - (excelConversations.length - index) * 60000,
+          Date.now() - (sheetConversations.length - index) * 60000,
         ),
       };
 
-      // Use the Google Drive image links from Excel data
+      // Use the Google Drive image links from sheet data
       const outputImages = conv.imageLinks
         ? conv.imageLinks.map(convertGoogleDriveLink)
         : [];
@@ -214,7 +214,7 @@ export default function Index() {
         messages: [userMessage], // Only user message, no AI response
         outputImages: outputImages,
         createdAt: new Date(
-          Date.now() - (excelConversations.length - index) * 60000,
+          Date.now() - (sheetConversations.length - index) * 60000,
         ),
         isFrozen: true,
       };
