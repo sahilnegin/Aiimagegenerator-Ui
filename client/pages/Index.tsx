@@ -230,25 +230,47 @@ export default function Index() {
 
   // Function to convert Google Drive links to direct image URLs
   const convertGoogleDriveLink = (driveLink: string) => {
-    if (!driveLink || typeof driveLink !== 'string') return driveLink;
+    if (!driveLink || typeof driveLink !== 'string') {
+      console.log('Invalid drive link:', driveLink);
+      return driveLink;
+    }
+
+    console.log('Converting Google Drive link:', driveLink);
 
     if (driveLink.includes("drive.google.com")) {
-      // Extract file ID from various Google Drive URL formats
       let fileId = null;
 
-      // Format: https://drive.google.com/file/d/FILE_ID/view
-      const match1 = driveLink.match(/\/d\/([a-zA-Z0-9-_]+)/);
-      if (match1) fileId = match1[1];
+      // Try multiple patterns to extract file ID
+      const patterns = [
+        /\/file\/d\/([a-zA-Z0-9-_]+)/, // /file/d/ID/view or /file/d/ID/edit
+        /\/d\/([a-zA-Z0-9-_]+)/, // /d/ID
+        /[?&]id=([a-zA-Z0-9-_]+)/, // ?id=ID or &id=ID
+        /\/([a-zA-Z0-9-_]{25,})(?:\/|$)/ // Just a long ID in the URL
+      ];
 
-      // Format: https://drive.google.com/open?id=FILE_ID
-      const match2 = driveLink.match(/[?&]id=([a-zA-Z0-9-_]+)/);
-      if (match2) fileId = match2[1];
+      for (const pattern of patterns) {
+        const match = driveLink.match(pattern);
+        if (match && match[1]) {
+          fileId = match[1];
+          break;
+        }
+      }
 
       if (fileId) {
-        // Use direct view URL that works better for embedding
-        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+        const convertedUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+        console.log(`Converted ${driveLink} -> ${convertedUrl}`);
+        return convertedUrl;
+      } else {
+        console.log('Could not extract file ID from:', driveLink);
       }
     }
+
+    // If it's already a direct image URL, return as is
+    if (driveLink.includes('uc?export=view') || driveLink.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+      return driveLink;
+    }
+
+    console.log('Link not converted:', driveLink);
     return driveLink;
   };
 
