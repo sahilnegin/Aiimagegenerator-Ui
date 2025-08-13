@@ -564,17 +564,21 @@ export default function Index() {
               title={thread.messages[0]?.text || "New Chat"}
             >
               <div className="line-clamp-2 leading-tight">{thread.title}</div>
-              {thread.id.startsWith("excel-new-") && (
-                <div className="text-xs text-green-600 mt-1">✨ New Import</div>
+              {thread.id.startsWith("sheet-") && (
+                <div className="text-xs text-green-600 mt-1">📊 From Sheets</div>
               )}
-              {thread.id.startsWith("excel-") &&
-                !thread.id.startsWith("excel-new-") && (
-                  <div className="text-xs text-blue-600 mt-1">
-                    📊 Old Import
-                  </div>
-                )}
             </div>
           ))}
+
+          {/* Loading state for Google Sheets data */}
+          {isLoadingSheetData && (
+            <div className="px-3 py-4 text-center">
+              <div className="text-sm text-gray-500 mb-2">Loading from Google Sheets...</div>
+              <div className="flex justify-center">
+                <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
