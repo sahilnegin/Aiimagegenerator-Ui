@@ -156,6 +156,16 @@ export default function Index() {
                 response,
                 imageLinks,
               });
+
+              // Special logging for protein bar conversation
+              if (prompt.toLowerCase().includes('protein')) {
+                console.log('🟢 PROTEIN BAR CONVERSATION FOUND:');
+                console.log('- Prompt:', prompt);
+                console.log('- Image column content:', imageColumn);
+                console.log('- Parsed image links:', imageLinks);
+                console.log('- Raw row data:', columns);
+              }
+
               console.log(
                 `Added conversation: "${prompt.substring(0, 50)}..." with ${imageLinks.length} images`,
                 imageLinks.length > 0 ? imageLinks : 'No images found'
