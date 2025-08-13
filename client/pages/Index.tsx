@@ -751,23 +751,49 @@ export default function Index() {
 
       {/* Main Content */}
       <div className="flex-1 bg-white flex flex-col">
-        {/* Debug Panel - Show current images */}
-        {currentThread?.outputImages && currentThread.outputImages.length > 0 && (
-          <div className="bg-yellow-50 border-b border-yellow-200 p-2 text-xs">
-            <details className="cursor-pointer">
-              <summary className="font-medium text-yellow-800">
-                🐛 Debug: {currentThread.outputImages.length} image URLs loaded
-              </summary>
-              <div className="mt-2 space-y-1 max-h-32 overflow-y-auto">
-                {currentThread.outputImages.map((url, i) => (
-                  <div key={i} className="text-yellow-700 break-all">
-                    {i + 1}: {url}
-                  </div>
-                ))}
+        {/* Debug Panel - Show current conversation data */}
+        <div className="bg-yellow-50 border-b border-yellow-200 p-2 text-xs">
+          <details className="cursor-pointer">
+            <summary className="font-medium text-yellow-800">
+              🐛 Debug: "{currentThread?.title?.substring(0, 30)}..." - {currentThread?.outputImages?.length || 0} images
+            </summary>
+            <div className="mt-2 space-y-2 max-h-40 overflow-y-auto">
+              <div className="text-yellow-700">
+                <strong>Thread ID:</strong> {currentThread?.id}
               </div>
-            </details>
-          </div>
-        )}
+              <div className="text-yellow-700">
+                <strong>Is Frozen:</strong> {currentThread?.isFrozen ? 'Yes' : 'No'}
+              </div>
+              {currentThread?.outputImages && currentThread.outputImages.length > 0 ? (
+                <div>
+                  <strong className="text-yellow-800">Image URLs:</strong>
+                  {currentThread.outputImages.map((url, i) => (
+                    <div key={i} className="text-yellow-700 break-all ml-2">
+                      {i + 1}: {url}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-red-600">
+                  <strong>No images found for this conversation!</strong>
+                  <br />Check the "📋 Show Raw CSV" to see what's in the Image Link column.
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  const conv = sheetConversations.find((c, index) =>
+                    currentThread?.id === `sheet-${index + 1}`
+                  );
+                  console.log('Selected conversation raw data:', conv);
+                  alert('Raw conversation data logged to console - check F12');
+                }}
+                className="mt-1 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
+              >
+                🔍 Log Raw Data
+              </button>
+            </div>
+          </details>
+        </div>
 
         {/* Image Gallery at Top */}
         <div className="h-32 bg-gray-50 border-b border-gray-200 p-4">
