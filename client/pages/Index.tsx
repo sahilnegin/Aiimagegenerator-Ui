@@ -307,6 +307,12 @@ export default function Index() {
         ? conv.imageLinks.map(convertGoogleDriveLink)
         : [];
 
+      console.log(`Thread "${threadId}":`, {
+        originalLinks: conv.imageLinks,
+        convertedLinks: outputImages,
+        linkCount: outputImages.length
+      });
+
       return {
         id: threadId,
         title: conv.prompt.slice(0, 80),
