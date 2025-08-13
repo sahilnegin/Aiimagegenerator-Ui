@@ -737,6 +737,24 @@ export default function Index() {
 
       {/* Main Content */}
       <div className="flex-1 bg-white flex flex-col">
+        {/* Debug Panel - Show current images */}
+        {currentThread?.outputImages && currentThread.outputImages.length > 0 && (
+          <div className="bg-yellow-50 border-b border-yellow-200 p-2 text-xs">
+            <details className="cursor-pointer">
+              <summary className="font-medium text-yellow-800">
+                🐛 Debug: {currentThread.outputImages.length} image URLs loaded
+              </summary>
+              <div className="mt-2 space-y-1 max-h-32 overflow-y-auto">
+                {currentThread.outputImages.map((url, i) => (
+                  <div key={i} className="text-yellow-700 break-all">
+                    {i + 1}: {url}
+                  </div>
+                ))}
+              </div>
+            </details>
+          </div>
+        )}
+
         {/* Image Gallery at Top */}
         <div className="h-32 bg-gray-50 border-b border-gray-200 p-4">
           {currentThread?.outputImages &&
