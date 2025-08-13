@@ -230,11 +230,23 @@ export default function Index() {
 
   // Function to convert Google Drive links to direct image URLs
   const convertGoogleDriveLink = (driveLink: string) => {
+    if (!driveLink || typeof driveLink !== 'string') return driveLink;
+
     if (driveLink.includes("drive.google.com")) {
-      const fileId = driveLink.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      // Extract file ID from various Google Drive URL formats
+      let fileId = null;
+
+      // Format: https://drive.google.com/file/d/FILE_ID/view
+      const match1 = driveLink.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (match1) fileId = match1[1];
+
+      // Format: https://drive.google.com/open?id=FILE_ID
+      const match2 = driveLink.match(/[?&]id=([a-zA-Z0-9-_]+)/);
+      if (match2) fileId = match2[1];
+
       if (fileId) {
-        // Use a different Google Drive URL format that works better for images
-        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h300`;
+        // Use direct view URL that works better for embedding
+        return `https://drive.google.com/uc?export=view&id=${fileId}`;
       }
     }
     return driveLink;
