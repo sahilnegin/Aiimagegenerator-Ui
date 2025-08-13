@@ -1,4 +1,7 @@
+
+// // "use client";
 // // import { useState, useRef, useEffect } from "react";
+// // import Papa from "papaparse";
 // // import {
 // //   MessageSquare,
 // //   Send,
@@ -7,7 +10,11 @@
 // //   ChevronRight,
 // //   X,
 // // } from "lucide-react";
-// // import { cn } from "@/lib/utils";
+
+// // // Utility function to join class names
+// // function cn(...args: any[]) {
+// //   return args.filter(Boolean).join(" ");
+// // }
 
 // // interface Message {
 // //   id: string;
@@ -26,26 +33,24 @@
 // //   isFrozen: boolean;
 // // }
 
-// // export default function Index() {
-// //   const prompts = [
-// //     "Generate a modern smart touch panel UI design.",
-// //     "Show me a luxury home automation setup.",
-// //     "Create images of futuristic urban living spaces.",
-// //     "Design a minimalist touch switch interface.",
-// //     "Visualize smart home convenience features.",
-// //     "Illustrate a smart panel replacing traditional switches.",
-// //     "Concept art for a high-tech smart home control panel.",
-// //     "Render a user-friendly smart touch panel layout.",
-// //   ];
+// // const prompts = [
+// //   "Generate a modern smart touch panel UI design.",
+// //   "Show me a luxury home automation setup.",
+// //   "Create images of futuristic urban living spaces.",
+// //   "Design a minimalist touch switch interface.",
+// //   "Visualize smart home convenience features.",
+// //   "Illustrate a smart panel replacing traditional switches.",
+// //   "Concept art for a high-tech smart home control panel.",
+// //   "Render a user-friendly smart touch panel layout.",
+// // ];
 
+// // export default function Page() {
 // //   const [placeholderText, setPlaceholderText] = useState("");
 // //   const [promptIndex, setPromptIndex] = useState(0);
 // //   const [charIndex, setCharIndex] = useState(0);
 
 // //   const [selectedThread, setSelectedThread] = useState("excel-new-1");
-// //   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-// //     null,
-// //   );
+// //   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 // //   const [inputText, setInputText] = useState("");
 // //   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 // //   const [isGenerating, setIsGenerating] = useState(false);
@@ -60,12 +65,7 @@
 // //   const fetchGoogleSheetData = async () => {
 // //     try {
 // //       setIsLoadingSheetData(true);
-// //       console.log("Fetching Google Sheets data...");
-
-// //       // Use the CSV export URL with explicit parameters
 // //       const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
-
-// //       console.log("CSV URL:", csvUrl);
 
 // //       const response = await fetch(csvUrl, {
 // //         method: "GET",
@@ -81,176 +81,441 @@
 // //       }
 
 // //       const csvText = await response.text();
-// //       const rows = csvText.split("\n").filter((row) => row.trim());
-
-// //       console.log(`Found ${rows.length} rows in CSV`);
+// //       const { data: rows } = Papa.parse(csvText, { skipEmptyLines: true });
 
 // //       // Skip header row and parse data
 // //       const conversations = [];
 // //       for (let i = 1; i < rows.length; i++) {
 // //         const row = rows[i];
-// //         if (!row.trim()) continue;
+// //         if (!row || row.length < 3) continue;
+// //         const prompt = row[0]?.trim() || "";
+// //         const agentOutput = row[1]?.trim() || "";
+// //         const imageColumn = row[2]?.trim() || "";
 
+// //         // Parse image links from the Image Link column (should be JSON array)
+// //         let imageLinks: string[] = [];
 // //         try {
-// //           // Parse CSV row (handle quoted values)
-// //           const columns = parseCSVRow(row);
-// //           console.log(
-// //             `Row ${i} parsed into ${columns.length} columns:`,
-// //             columns.map((col) => col.substring(0, 50) + "..."),
-// //           );
-
-// //           if (columns.length >= 1) {
-// //             const prompt = columns[0]?.trim() || ""; // Input Prompt
-// //             const response = columns[1]?.trim() || ""; // Agent Output
-// //             const imageColumn = columns[2]?.trim() || ""; // Image Link column
-
-// //             // Parse image links from the Image Link column (column 2)
-// //             const imageLinks = [];
-// //             console.log(
-// //               `Row ${i} Image column content:`,
-// //               imageColumn.substring(0, 200),
-// //             );
-
-// //             if (imageColumn) {
-// //               // Check if the cell contains an array (JSON format)
-// //               if (imageColumn.startsWith("[") && imageColumn.endsWith("]")) {
-// //                 try {
-// //                   const parsedArray = JSON.parse(imageColumn);
-// //                   if (Array.isArray(parsedArray)) {
-// //                     console.log(
-// //                       `Found JSON array with ${parsedArray.length} items:`,
-// //                       parsedArray,
-// //                     );
-// //                     parsedArray.forEach((link) => {
-// //                       if (
-// //                         typeof link === "string" &&
-// //                         (link.includes("drive.google.com") ||
-// //                           link.includes("http"))
-// //                       ) {
-// //                         imageLinks.push(link);
-// //                         console.log(`Added from JSON array:`, link);
-// //                       }
-// //                     });
-// //                   }
-// //                 } catch (e) {
-// //                   console.log(
-// //                     `Failed to parse JSON array in image column: ${imageColumn.substring(0, 50)}...`,
-// //                   );
-// //                 }
-// //               }
-// //               // Check if it's a single Google Drive link or any HTTP link
-// //               else if (
-// //                 imageColumn.includes("drive.google.com") ||
-// //                 imageColumn.includes("http")
-// //               ) {
-// //                 imageLinks.push(imageColumn);
-// //                 console.log(`Added single image link:`, imageColumn);
-// //               }
-// //               // Check if it's comma-separated links
-// //               else if (
-// //                 imageColumn.includes(",") &&
-// //                 (imageColumn.includes("drive.google.com") ||
-// //                   imageColumn.includes("http"))
-// //               ) {
-// //                 const links = imageColumn.split(",").map((link) => link.trim());
-// //                 console.log(`Found comma-separated links:`, links);
-// //                 links.forEach((link) => {
-// //                   if (
-// //                     link.includes("drive.google.com") ||
-// //                     link.includes("http")
-// //                   ) {
-// //                     imageLinks.push(link);
-// //                     console.log(`Added from comma-separated:`, link);
-// //                   }
-// //                 });
-// //               }
-// //             }
-
-// //             // Only add if we have a valid prompt
-// //             if (
-// //               prompt &&
-// //               prompt.length > 0 &&
-// //               !prompt.includes("[{") &&
-// //               !prompt.includes("shot_number")
-// //             ) {
-// //               conversations.push({
-// //                 prompt,
-// //                 response,
-// //                 imageLinks,
-// //               });
-
-// //               // Special logging for protein bar conversation
-// //               if (prompt.toLowerCase().includes("protein")) {
-// //                 console.log("🟢 PROTEIN BAR CONVERSATION FOUND:");
-// //                 console.log("- Prompt:", prompt);
-// //                 console.log("- Image column content:", imageColumn);
-// //                 console.log("- Parsed image links:", imageLinks);
-// //                 console.log("- Raw row data:", columns);
-// //               }
-
-// //               console.log(
-// //                 `Added conversation: "${prompt.substring(0, 50)}..." with ${imageLinks.length} images`,
-// //                 imageLinks.length > 0 ? imageLinks : "No images found",
-// //               );
-// //             } else {
-// //               console.log(
-// //                 `Skipped row ${i} - invalid prompt:`,
-// //                 prompt.substring(0, 100),
-// //               );
-// //             }
+// //           const parsed = JSON.parse(imageColumn);
+// //           if (Array.isArray(parsed)) {
+// //             imageLinks = parsed.filter((link) => typeof link === "string");
 // //           }
-// //         } catch (error) {
-// //           console.error(
-// //             `Error parsing row ${i}:`,
-// //             error,
-// //             row.substring(0, 100),
-// //           );
+// //         } catch {
+// //           // fallback: try comma-separation or single link
+// //           if (imageColumn.includes(",")) {
+// //             imageLinks = imageColumn.split(",").map((x) => x.trim());
+// //           } else if (imageColumn.includes("http")) {
+// //             imageLinks = [imageColumn];
+// //           }
+// //         }
+
+// //         // Only add if we have a valid prompt
+// //         if (
+// //           prompt &&
+// //           prompt.length > 0 &&
+// //           !prompt.includes("[{") &&
+// //           !prompt.includes("shot_number")
+// //         ) {
+// //           conversations.push({
+// //             prompt,
+// //             response: agentOutput,
+// //             imageLinks,
+// //           });
 // //         }
 // //       }
 
 // //       setSheetConversations(conversations);
-// //       console.log(
-// //         `Loaded ${conversations.length} conversations from Google Sheets`,
-// //       );
 // //     } catch (error) {
-// //       console.error("Error fetching Google Sheets data:", error);
-// //       // Fallback to empty array
 // //       setSheetConversations([]);
 // //     } finally {
 // //       setIsLoadingSheetData(false);
 // //     }
 // //   };
-// import { useState, useRef, useEffect } from "react";
-// import Papa from "papaparse";
-// import {
-//   MessageSquare,
-//   Send,
-//   Paperclip,
-//   ChevronLeft,
-//   ChevronRight,
-//   X,
-// } from "lucide-react";
-// import { cn } from "@/lib/utils";
 
-// interface Message {
-//   id: string;
-//   text: string;
-//   isUser: boolean;
-//   uploadedImages?: string[];
-//   timestamp: Date;
-// }
+// //   // Load data on component mount
+// //   useEffect(() => {
+// //     fetchGoogleSheetData();
+// //     // eslint-disable-next-line
+// //   }, []);
 
-// interface Thread {
-//   id: string;
-//   title: string;
-//   messages: Message[];
-//   outputImages: string[];
-//   createdAt: Date;
-//   isFrozen: boolean;
-// }
+// //   // Refetch on focus/visibility
+// //   useEffect(() => {
+// //     const handleFocus = () => fetchGoogleSheetData();
+// //     window.addEventListener("focus", handleFocus);
+// //     return () => window.removeEventListener("focus", handleFocus);
+// //   }, []);
+// //   useEffect(() => {
+// //     const handleVisibilityChange = () => {
+// //       if (!document.hidden) fetchGoogleSheetData();
+// //     };
+// //     document.addEventListener("visibilitychange", handleVisibilityChange);
+// //     return () =>
+// //       document.removeEventListener("visibilitychange", handleVisibilityChange);
+// //   }, []);
 
-// export default function Index() {
-//   // ... your other state and refs ...
+// //   // Google Drive link converter
+// //   const convertGoogleDriveLink = (driveLink: string) => {
+// //     if (!driveLink || typeof driveLink !== "string") return driveLink;
+// //     if (driveLink.includes("drive.google.com")) {
+// //       let fileId = null;
+// //       const patterns = [
+// //         /\/file\/d\/([a-zA-Z0-9-_]+)/,
+// //         /\/d\/([a-zA-Z0-9-_]+)/,
+// //         /[?&]id=([a-zA-Z0-9-_]+)/,
+// //         /\/([a-zA-Z0-9-_]{25,})(?:\/|$)/,
+// //       ];
+// //       for (const pattern of patterns) {
+// //         const match = driveLink.match(pattern);
+// //         if (match && match[1]) {
+// //           fileId = match[1];
+// //           break;
+// //         }
+// //       }
+// //       if (fileId) {
+// //         return `https://lh3.googleusercontent.com/d/${fileId}`;
+// //       }
+// //     }
+// //     if (
+// //       driveLink.includes("googleusercontent.com") ||
+// //       driveLink.includes("uc?export=view") ||
+// //       driveLink.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+// //     ) {
+// //       return driveLink;
+// //     }
+// //     return driveLink;
+// //   };
+
+// //   // Fallback images for when Google Drive links fail
+// //   const getFallbackImage = (index: number, prompt: string) => {
+// //     const fallbackImages = {
+// //       protein: [
+// //         "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=300&h=200&fit=crop",
+// //         "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=200&fit=crop",
+// //         "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=300&h=200&fit=crop",
+// //       ],
+// //       glass: [
+// //         "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=200&fit=crop",
+// //         "https://images.unsplash.com/photo-1567653418876-5bb0e566e1c2?w=300&h=200&fit=crop",
+// //       ],
+// //       airpod: [
+// //         "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=300&h=200&fit=crop",
+// //         "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=300&h=200&fit=crop",
+// //       ],
+// //       oneplus: [
+// //         "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300&h=200&fit=crop",
+// //         "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=300&h=200&fit=crop",
+// //       ],
+// //     };
+
+// //     if (prompt.includes("protein"))
+// //       return fallbackImages.protein[index % fallbackImages.protein.length];
+// //     if (prompt.includes("glass"))
+// //       return fallbackImages.glass[index % fallbackImages.glass.length];
+// //     if (prompt.includes("airpod"))
+// //       return fallbackImages.airpod[index % fallbackImages.airpod.length];
+// //     if (prompt.includes("oneplus"))
+// //       return fallbackImages.oneplus[index % fallbackImages.oneplus.length];
+
+// //     return `https://images.unsplash.com/photo-${1500000000000 + index}?w=300&h=200&fit=crop`;
+// //   };
+
+// //   // Function to create threads from Google Sheets data
+// //   const createThreadsFromSheetData = () => {
+// //     return sheetConversations.map((conv, index) => {
+// //       const threadId = `sheet-${index + 1}`;
+// //       const userMessage: Message = {
+// //         id: `${threadId}-user`,
+// //         text: conv.prompt,
+// //         isUser: true,
+// //         uploadedImages: [],
+// //         timestamp: new Date(
+// //           Date.now() - (sheetConversations.length - index) * 60000,
+// //         ),
+// //       };
+// //       const outputImages = conv.imageLinks
+// //         ? conv.imageLinks.map(convertGoogleDriveLink)
+// //         : [];
+// //       return {
+// //         id: threadId,
+// //         title: conv.prompt.slice(0, 80),
+// //         messages: [userMessage],
+// //         outputImages: outputImages,
+// //         createdAt: new Date(
+// //           Date.now() - (sheetConversations.length - index) * 60000,
+// //         ),
+// //         isFrozen: true,
+// //       };
+// //     });
+// //   };
+
+// //   const [threads, setThreads] = useState<Thread[]>([
+// //     {
+// //       id: "excel-new-1",
+// //       title: "New Chat",
+// //       createdAt: new Date(),
+// //       messages: [],
+// //       outputImages: [],
+// //       isFrozen: false,
+// //     },
+// //   ]);
+
+// //   // Update threads when sheet data loads
+// //   useEffect(() => {
+// //     if (!isLoadingSheetData && sheetConversations.length > 0) {
+// //       const sheetThreads = createThreadsFromSheetData();
+// //       setThreads((prevThreads) => [
+// //         prevThreads[0],
+// //         ...sheetThreads,
+// //       ]);
+// //     }
+// //     // eslint-disable-next-line
+// //   }, [isLoadingSheetData, sheetConversations]);
+
+// //   const textareaRef = useRef<HTMLTextAreaElement>(null);
+// //   const fileInputRef = useRef<HTMLInputElement>(null);
+// //   const messagesEndRef = useRef<HTMLDivElement>(null);
+// //   const galleryRef = useRef<HTMLDivElement>(null);
+
+// //   const currentThread = threads.find((t) => t.id === selectedThread);
+
+// //   const scrollToBottom = () => {
+// //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+// //   };
+
+// //   useEffect(() => {
+// //     scrollToBottom();
+// //   }, [currentThread?.messages]);
+
+// //   const adjustTextareaHeight = () => {
+// //     const textarea = textareaRef.current;
+// //     if (textarea) {
+// //       textarea.style.height = "auto";
+// //       textarea.style.height = Math.min(textarea.scrollHeight, 200) + "px";
+// //     }
+// //   };
+
+// //   useEffect(() => {
+// //     adjustTextareaHeight();
+// //   }, [inputText]);
+
+// //   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+// //     setInputText(e.target.value);
+// //   };
+
+// //   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+// //     if (e.key === "Enter" && !e.shiftKey) {
+// //       e.preventDefault();
+// //       handleSendMessage();
+// //     }
+// //   };
+
+// //   const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+// //     const items = e.clipboardData?.items;
+// //     if (items) {
+// //       for (let i = 0; i < items.length; i++) {
+// //         const item = items[i];
+// //         if (item.type.indexOf("image") !== -1) {
+// //           const file = item.getAsFile();
+// //           if (file) {
+// //             const reader = new FileReader();
+// //             reader.onload = (e) => {
+// //               if (e.target?.result) {
+// //                 setUploadedImages((prev) => [
+// //                   ...prev,
+// //                   e.target.result as string,
+// //                 ]);
+// //               }
+// //             };
+// //             reader.readAsDataURL(file);
+// //           }
+// //         }
+// //       }
+// //     }
+// //   };
+
+// //   const handleSendMessage = async () => {
+// //     if (!inputText.trim() && uploadedImages.length === 0) return;
+// //     if (isGenerating || currentThread?.isFrozen) return;
+
+// //     setIsGenerating(true);
+
+// //     const newMessage: Message = {
+// //       id: Date.now().toString(),
+// //       text: inputText,
+// //       isUser: true,
+// //       uploadedImages: [...uploadedImages],
+// //       timestamp: new Date(),
+// //     };
+
+// //     setThreads((prevThreads) =>
+// //       prevThreads.map((thread) =>
+// //         thread.id === selectedThread
+// //           ? {
+// //               ...thread,
+// //               messages: [...thread.messages, newMessage],
+// //               title:
+// //                 thread.messages.length === 0
+// //                   ? inputText.slice(0, 80)
+// //                   : thread.title,
+// //               isFrozen: true,
+// //             }
+// //           : thread,
+// //       ),
+// //     );
+
+// //     // Store the current input text and uploaded images before clearing
+// //     const currentInputText = inputText;
+// //     const currentUploadedImages = [...uploadedImages];
+
+// //     setInputText("");
+// //     setUploadedImages([]);
+// //     if (textareaRef.current) {
+// //       textareaRef.current.style.height = "auto";
+// //     }
+
+// //     try {
+// //       // Submit to n8n webhook
+// //       const formData = new FormData();
+// //       formData.append("chatInput", currentInputText);
+
+// //       // Convert first uploaded image to blob and append to form data
+// //       if (currentUploadedImages.length > 0) {
+// //         // Convert base64 to blob
+// //         const base64Data = currentUploadedImages[0];
+// //         const response = await fetch(base64Data);
+// //         const blob = await response.blob();
+// //         formData.append("data", blob, "uploaded-image.jpeg");
+// //       }
+
+// //       const webhookResponse = await fetch(
+// //         "https://vidgy.app.n8n.cloud/webhook/84342f4e-4ba8-4a87-939f-2c2880571a5e",
+// //         {
+// //           method: "POST",
+// //           body: formData,
+// //         },
+// //       );
+
+// //       if (webhookResponse.ok) {
+// //         const result = await webhookResponse.json();
+// //         // Parse the response and extract generated images
+// //         let generatedImages: string[] = [];
+
+// //         if (result && typeof result === "object") {
+// //           if (result.images && Array.isArray(result.images)) {
+// //             generatedImages = result.images;
+// //           } else if (result.imageUrls && Array.isArray(result.imageUrls)) {
+// //             generatedImages = result.imageUrls;
+// //           } else if (result.data && Array.isArray(result.data)) {
+// //             generatedImages = result.data;
+// //           } else if (result.output && Array.isArray(result.output)) {
+// //             generatedImages = result.output;
+// //           } else if (Array.isArray(result)) {
+// //             generatedImages = result;
+// //           } else {
+// //             Object.keys(result).forEach((key) => {
+// //               if (Array.isArray(result[key]) && result[key].length > 0) {
+// //                 if (
+// //                   typeof result[key][0] === "string" &&
+// //                   result[key][0].includes("http")
+// //                 ) {
+// //                   generatedImages = result[key];
+// //                 }
+// //               }
+// //             });
+// //           }
+// //         }
+
+// //         setThreads((prevThreads) =>
+// //           prevThreads.map((thread) =>
+// //             thread.id === selectedThread
+// //               ? {
+// //                   ...thread,
+// //                   outputImages: generatedImages,
+// //                 }
+// //               : thread,
+// //           ),
+// //         );
+
+// //         setIsGenerating(false);
+// //       } else {
+// //         setThreads((prevThreads) =>
+// //           prevThreads.map((thread) =>
+// //             thread.id === selectedThread
+// //               ? {
+// //                   ...thread,
+// //                   outputImages: [],
+// //                 }
+// //               : thread,
+// //           ),
+// //         );
+// //         setIsGenerating(false);
+// //       }
+// //     } catch (error) {
+// //       setThreads((prevThreads) =>
+// //         prevThreads.map((thread) =>
+// //           thread.id === selectedThread
+// //             ? {
+// //                 ...thread,
+// //                 outputImages: [],
+// //               }
+// //             : thread,
+// //         ),
+// //       );
+
+// //       setIsGenerating(false);
+// //     }
+// //   };
+
+// //   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+// //     const files = e.target.files;
+// //     if (files) {
+// //       Array.from(files).forEach((file) => {
+// //         const reader = new FileReader();
+// //         reader.onload = (e) => {
+// //           if (e.target?.result) {
+// //             setUploadedImages((prev) => [...prev, e.target.result as string]);
+// //           }
+// //         };
+// //         reader.readAsDataURL(file);
+// //       });
+// //     }
+// //   };
+
+// //   const removeUploadedImage = (index: number) => {
+// //     setUploadedImages((prev) => prev.filter((_, i) => i !== index));
+// //   };
+
+// //   const createNewChat = () => {
+// //     const newThread: Thread = {
+// //       id: Date.now().toString(),
+// //       title: "New Chat",
+// //       messages: [],
+// //       outputImages: [],
+// //       createdAt: new Date(),
+// //       isFrozen: false,
+// //     };
+// //     setThreads((prev) => [newThread, ...prev]);
+// //     setSelectedThread(newThread.id);
+// //     setSelectedImageIndex(null);
+// //     setIsGenerating(false);
+// //   };
+
+// //   const scrollGallery = (direction: "left" | "right") => {
+// //     if (galleryRef.current) {
+// //       const scrollAmount = 320;
+// //       galleryRef.current.scrollBy({
+// //         left: direction === "left" ? -scrollAmount : scrollAmount,
+// //         behavior: "smooth",
+// //       });
+// //     }
+// //   };
+// // ...other imports...
+// import React, { useState, useEffect, useRef } from "react";
+// // ...your other imports (icons, cn, Papa, etc.)...
+
+// export default function Page() {
+//   const [placeholderText, setPlaceholderText] = useState("");
+//   const [promptIndex, setPromptIndex] = useState(0);
+//   const [charIndex, setCharIndex] = useState(0);
 
 //   const [selectedThread, setSelectedThread] = useState("excel-new-1");
 //   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -268,7 +533,6 @@
 //   const fetchGoogleSheetData = async () => {
 //     try {
 //       setIsLoadingSheetData(true);
-//       // Use the CSV export URL with explicit parameters
 //       const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
 
 //       const response = await fetch(csvUrl, {
@@ -285,8 +549,6 @@
 //       }
 
 //       const csvText = await response.text();
-
-//       // Use PapaParse for robust CSV parsing
 //       const { data: rows } = Papa.parse(csvText, { skipEmptyLines: true });
 
 //       // Skip header row and parse data
@@ -294,9 +556,8 @@
 //       for (let i = 1; i < rows.length; i++) {
 //         const row = rows[i];
 //         if (!row || row.length < 3) continue;
-
 //         const prompt = row[0]?.trim() || "";
-//         const responseJSON = row[1]?.trim() || "";
+//         const agentOutput = row[1]?.trim() || "";
 //         const imageColumn = row[2]?.trim() || "";
 
 //         // Parse image links from the Image Link column (should be JSON array)
@@ -304,12 +565,12 @@
 //         try {
 //           const parsed = JSON.parse(imageColumn);
 //           if (Array.isArray(parsed)) {
-//             imageLinks = parsed.filter(link => typeof link === "string");
+//             imageLinks = parsed.filter((link) => typeof link === "string");
 //           }
 //         } catch {
 //           // fallback: try comma-separation or single link
 //           if (imageColumn.includes(",")) {
-//             imageLinks = imageColumn.split(",").map(x => x.trim());
+//             imageLinks = imageColumn.split(",").map((x) => x.trim());
 //           } else if (imageColumn.includes("http")) {
 //             imageLinks = [imageColumn];
 //           }
@@ -324,7 +585,7 @@
 //         ) {
 //           conversations.push({
 //             prompt,
-//             response: responseJSON,
+//             response: agentOutput,
 //             imageLinks,
 //           });
 //         }
@@ -337,85 +598,39 @@
 //       setIsLoadingSheetData(false);
 //     }
 //   };
-//   // Improved CSV parser that handles quoted values and escaped quotes
-//   const parseCSVRow = (row: string): string[] => {
-//     const result = [];
-//     let current = "";
-//     let inQuotes = false;
 
-//     for (let i = 0; i < row.length; i++) {
-//       const char = row[i];
-//       const nextChar = row[i + 1];
-
-//       if (char === '"') {
-//         if (inQuotes && nextChar === '"') {
-//           // Handle escaped quotes ("")
-//           current += '"';
-//           i++; // Skip the next quote
-//         } else {
-//           // Toggle quote state
-//           inQuotes = !inQuotes;
-//         }
-//       } else if (char === "," && !inQuotes) {
-//         result.push(current.trim());
-//         current = "";
-//       } else {
-//         current += char;
-//       }
-//     }
-
-//     result.push(current.trim());
-//     return result;
-//   };
-
-//   // Load data on component mount and refresh on page reload
+//   // Load data on component mount
 //   useEffect(() => {
 //     fetchGoogleSheetData();
+//     // eslint-disable-next-line
 //   }, []);
 
-//   // Fetch data when page gains focus (user returns to tab)
+//   // Refetch on focus/visibility
 //   useEffect(() => {
-//     const handleFocus = () => {
-//       fetchGoogleSheetData();
-//     };
-
+//     const handleFocus = () => fetchGoogleSheetData();
 //     window.addEventListener("focus", handleFocus);
 //     return () => window.removeEventListener("focus", handleFocus);
 //   }, []);
-
-//   // Fetch data when page becomes visible again
 //   useEffect(() => {
 //     const handleVisibilityChange = () => {
-//       if (!document.hidden) {
-//         fetchGoogleSheetData();
-//       }
+//       if (!document.hidden) fetchGoogleSheetData();
 //     };
-
 //     document.addEventListener("visibilitychange", handleVisibilityChange);
 //     return () =>
 //       document.removeEventListener("visibilitychange", handleVisibilityChange);
 //   }, []);
 
-//   // Function to convert Google Drive links to direct image URLs
+//   // Google Drive link converter
 //   const convertGoogleDriveLink = (driveLink: string) => {
-//     if (!driveLink || typeof driveLink !== "string") {
-//       console.log("Invalid drive link:", driveLink);
-//       return driveLink;
-//     }
-
-//     console.log("Converting Google Drive link:", driveLink);
-
+//     if (!driveLink || typeof driveLink !== "string") return driveLink;
 //     if (driveLink.includes("drive.google.com")) {
 //       let fileId = null;
-
-//       // Try multiple patterns to extract file ID
 //       const patterns = [
-//         /\/file\/d\/([a-zA-Z0-9-_]+)/, // /file/d/ID/view or /file/d/ID/edit
-//         /\/d\/([a-zA-Z0-9-_]+)/, // /d/ID
-//         /[?&]id=([a-zA-Z0-9-_]+)/, // ?id=ID or &id=ID
-//         /\/([a-zA-Z0-9-_]{25,})(?:\/|$)/, // Just a long ID in the URL
+//         /\/file\/d\/([a-zA-Z0-9-_]+)/,
+//         /\/d\/([a-zA-Z0-9-_]+)/,
+//         /[?&]id=([a-zA-Z0-9-_]+)/,
+//         /\/([a-zA-Z0-9-_]{25,})(?:\/|$)/,
 //       ];
-
 //       for (const pattern of patterns) {
 //         const match = driveLink.match(pattern);
 //         if (match && match[1]) {
@@ -423,18 +638,10 @@
 //           break;
 //         }
 //       }
-
 //       if (fileId) {
-//         // Try the most reliable format for public images
-//         const convertedUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
-//         console.log(`Converted ${driveLink} -> ${convertedUrl}`);
-//         return convertedUrl;
-//       } else {
-//         console.log("Could not extract file ID from:", driveLink);
+//         return `https://lh3.googleusercontent.com/d/${fileId}`;
 //       }
 //     }
-
-//     // If it's already a direct image URL, return as is
 //     if (
 //       driveLink.includes("googleusercontent.com") ||
 //       driveLink.includes("uc?export=view") ||
@@ -442,8 +649,6 @@
 //     ) {
 //       return driveLink;
 //     }
-
-//     console.log("Link not converted:", driveLink);
 //     return driveLink;
 //   };
 
@@ -485,9 +690,7 @@
 //   const createThreadsFromSheetData = () => {
 //     return sheetConversations.map((conv, index) => {
 //       const threadId = `sheet-${index + 1}`;
-
-//       // Create user message only
-//       const userMessage: Message = {
+//       const userMessage = {
 //         id: `${threadId}-user`,
 //         text: conv.prompt,
 //         isUser: true,
@@ -496,22 +699,13 @@
 //           Date.now() - (sheetConversations.length - index) * 60000,
 //         ),
 //       };
-
-//       // Use the Google Drive image links from sheet data
 //       const outputImages = conv.imageLinks
 //         ? conv.imageLinks.map(convertGoogleDriveLink)
 //         : [];
-
-//       console.log(`Thread "${threadId}":`, {
-//         originalLinks: conv.imageLinks,
-//         convertedLinks: outputImages,
-//         linkCount: outputImages.length,
-//       });
-
 //       return {
 //         id: threadId,
 //         title: conv.prompt.slice(0, 80),
-//         messages: [userMessage], // Only user message, no AI response
+//         messages: [userMessage],
 //         outputImages: outputImages,
 //         createdAt: new Date(
 //           Date.now() - (sheetConversations.length - index) * 60000,
@@ -521,9 +715,9 @@
 //     });
 //   };
 
-//   const [threads, setThreads] = useState<Thread[]>([
+//   const [threads, setThreads] = useState([
 //     {
-//       id: "1",
+//       id: "excel-new-1",
 //       title: "New Chat",
 //       createdAt: new Date(),
 //       messages: [],
@@ -536,24 +730,18 @@
 //   useEffect(() => {
 //     if (!isLoadingSheetData && sheetConversations.length > 0) {
 //       const sheetThreads = createThreadsFromSheetData();
-//       console.log(`Creating ${sheetThreads.length} threads from sheet data`);
-//       sheetThreads.forEach((thread, index) => {
-//         console.log(
-//           `Thread ${index + 1}: "${thread.title.substring(0, 30)}..." with ${thread.outputImages.length} images`,
-//         );
-//       });
 //       setThreads((prevThreads) => [
-//         // Keep the "New Chat" thread at the top
 //         prevThreads[0],
 //         ...sheetThreads,
 //       ]);
 //     }
+//     // eslint-disable-next-line
 //   }, [isLoadingSheetData, sheetConversations]);
 
-//   const textareaRef = useRef<HTMLTextAreaElement>(null);
-//   const fileInputRef = useRef<HTMLInputElement>(null);
-//   const messagesEndRef = useRef<HTMLDivElement>(null);
-//   const galleryRef = useRef<HTMLDivElement>(null);
+//   const textareaRef = useRef(null);
+//   const fileInputRef = useRef(null);
+//   const messagesEndRef = useRef(null);
+//   const galleryRef = useRef(null);
 
 //   const currentThread = threads.find((t) => t.id === selectedThread);
 
@@ -577,18 +765,18 @@
 //     adjustTextareaHeight();
 //   }, [inputText]);
 
-//   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+//   const handleInputChange = (e) => {
 //     setInputText(e.target.value);
 //   };
 
-//   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+//   const handleKeyDown = (e) => {
 //     if (e.key === "Enter" && !e.shiftKey) {
 //       e.preventDefault();
 //       handleSendMessage();
 //     }
 //   };
 
-//   const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+//   const handlePaste = (e) => {
 //     const items = e.clipboardData?.items;
 //     if (items) {
 //       for (let i = 0; i < items.length; i++) {
@@ -601,7 +789,7 @@
 //               if (e.target?.result) {
 //                 setUploadedImages((prev) => [
 //                   ...prev,
-//                   e.target.result as string,
+//                   e.target.result,
 //                 ]);
 //               }
 //             };
@@ -618,7 +806,7 @@
 
 //     setIsGenerating(true);
 
-//     const newMessage: Message = {
+//     const newMessage = {
 //       id: Date.now().toString(),
 //       text: inputText,
 //       isUser: true,
@@ -676,32 +864,21 @@
 
 //       if (webhookResponse.ok) {
 //         const result = await webhookResponse.json();
-//         console.log("n8n webhook response:", result);
-//         console.log("Response type:", typeof result);
-//         console.log("Response keys:", Object.keys(result || {}));
-
 //         // Parse the response and extract generated images
-//         let generatedImages: string[] = [];
+//         let generatedImages = [];
 
 //         if (result && typeof result === "object") {
-//           // Try multiple possible response formats
 //           if (result.images && Array.isArray(result.images)) {
 //             generatedImages = result.images;
-//             console.log("Found images in result.images:", generatedImages);
 //           } else if (result.imageUrls && Array.isArray(result.imageUrls)) {
 //             generatedImages = result.imageUrls;
-//             console.log("Found images in result.imageUrls:", generatedImages);
 //           } else if (result.data && Array.isArray(result.data)) {
 //             generatedImages = result.data;
-//             console.log("Found images in result.data:", generatedImages);
 //           } else if (result.output && Array.isArray(result.output)) {
 //             generatedImages = result.output;
-//             console.log("Found images in result.output:", generatedImages);
 //           } else if (Array.isArray(result)) {
 //             generatedImages = result;
-//             console.log("Result is an array:", generatedImages);
 //           } else {
-//             // Look for any array of strings that might be image URLs
 //             Object.keys(result).forEach((key) => {
 //               if (Array.isArray(result[key]) && result[key].length > 0) {
 //                 if (
@@ -709,24 +886,19 @@
 //                   result[key][0].includes("http")
 //                 ) {
 //                   generatedImages = result[key];
-//                   console.log(
-//                     `Found images in result.${key}:`,
-//                     generatedImages,
-//                   );
 //                 }
 //               }
 //             });
 //           }
 //         }
 
-//         console.log("Final generatedImages:", generatedImages);
-
+//         // PREPEND new images so they go to the top
 //         setThreads((prevThreads) =>
 //           prevThreads.map((thread) =>
 //             thread.id === selectedThread
 //               ? {
 //                   ...thread,
-//                   outputImages: generatedImages, // Will be empty array if no images from API
+//                   outputImages: [...generatedImages, ...(thread.outputImages || [])],
 //                 }
 //               : thread,
 //           ),
@@ -734,29 +906,25 @@
 
 //         setIsGenerating(false);
 //       } else {
-//         const errorText = await webhookResponse.text();
-//         console.error(
-//           `Webhook request failed: ${webhookResponse.status}`,
-//           errorText,
+//         setThreads((prevThreads) =>
+//           prevThreads.map((thread) =>
+//             thread.id === selectedThread
+//               ? {
+//                   ...thread,
+//                   outputImages: [],
+//                 }
+//               : thread,
+//           ),
 //         );
-//         throw new Error(`Webhook request failed: ${webhookResponse.status}`);
+//         setIsGenerating(false);
 //       }
 //     } catch (error) {
-//       console.error("Error submitting to n8n webhook:", error);
-//       console.error("Error details:", {
-//         message: error.message,
-//         stack: error.stack,
-//         inputText: currentInputText,
-//         hasImages: currentUploadedImages.length > 0,
-//       });
-
-//       // No fallback images - just show empty gallery on error
 //       setThreads((prevThreads) =>
 //         prevThreads.map((thread) =>
 //           thread.id === selectedThread
 //             ? {
 //                 ...thread,
-//                 outputImages: [], // Empty array - no images on error
+//                 outputImages: [],
 //               }
 //             : thread,
 //         ),
@@ -766,14 +934,14 @@
 //     }
 //   };
 
-//   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+//   const handleFileUpload = (e) => {
 //     const files = e.target.files;
 //     if (files) {
 //       Array.from(files).forEach((file) => {
 //         const reader = new FileReader();
 //         reader.onload = (e) => {
 //           if (e.target?.result) {
-//             setUploadedImages((prev) => [...prev, e.target.result as string]);
+//             setUploadedImages((prev) => [...prev, e.target.result]);
 //           }
 //         };
 //         reader.readAsDataURL(file);
@@ -781,12 +949,12 @@
 //     }
 //   };
 
-//   const removeUploadedImage = (index: number) => {
+//   const removeUploadedImage = (index) => {
 //     setUploadedImages((prev) => prev.filter((_, i) => i !== index));
 //   };
 
 //   const createNewChat = () => {
-//     const newThread: Thread = {
+//     const newThread = {
 //       id: Date.now().toString(),
 //       title: "New Chat",
 //       messages: [],
@@ -800,7 +968,7 @@
 //     setIsGenerating(false);
 //   };
 
-//   const scrollGallery = (direction: "left" | "right") => {
+//   const scrollGallery = (direction) => {
 //     if (galleryRef.current) {
 //       const scrollAmount = 320;
 //       galleryRef.current.scrollBy({
@@ -829,8 +997,9 @@
 
 //       return () => clearTimeout(timeout);
 //     }
+//     // eslint-disable-next-line
 //   }, [charIndex, promptIndex, isGenerating]);
-  
+
 //   return (
 //     <div className="h-screen bg-gray-100 flex font-sans">
 //       {/* Sidebar */}
@@ -943,27 +1112,17 @@
 //                       alt={`Generated image ${index + 1}`}
 //                       className="h-full w-24 object-cover rounded bg-gray-200"
 //                       onLoad={(e) => {
-//                         console.log(
-//                           `Image ${index + 1} loaded successfully:`,
-//                           image,
-//                         );
 //                         const target = e.target as HTMLImageElement;
 //                         target.style.opacity = "1";
 //                       }}
 //                       onError={(e) => {
-//                         console.error(
-//                           `Image ${index + 1} failed to load:`,
-//                           image,
-//                         );
 //                         const target = e.target as HTMLImageElement;
 //                         target.style.opacity = "0.5";
 //                         target.title = `Failed to load: ${image}`;
-
 //                         if (
 //                           target.src !==
 //                           getFallbackImage(index, currentThread?.title || "")
 //                         ) {
-//                           console.log(`Using fallback for image ${index + 1}`);
 //                           target.src = getFallbackImage(
 //                             index,
 //                             currentThread?.title || "",
@@ -1195,6 +1354,7 @@
 //     </div>
 //   );
 // }
+
 "use client";
 import { useState, useRef, useEffect } from "react";
 import Papa from "papaparse";
@@ -1244,7 +1404,7 @@ export default function Page() {
   const [placeholderText, setPlaceholderText] = useState("");
   const [promptIndex, setPromptIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
-
+  const [generationAttempted, setGenerationAttempted] = useState(false);
   const [selectedThread, setSelectedThread] = useState("excel-new-1");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [inputText, setInputText] = useState("");
@@ -1594,6 +1754,7 @@ export default function Page() {
         const result = await webhookResponse.json();
         // Parse the response and extract generated images
         let generatedImages: string[] = [];
+        console.log("Webhook result:", result, "Generated:", generatedImages);
 
         if (result && typeof result === "object") {
           if (result.images && Array.isArray(result.images)) {
@@ -1618,18 +1779,25 @@ export default function Page() {
               }
             });
           }
+          setGenerationAttempted(true);
         }
 
+        // PREPEND new images so they go to the top
         setThreads((prevThreads) =>
           prevThreads.map((thread) =>
             thread.id === selectedThread
               ? {
                   ...thread,
-                  outputImages: generatedImages,
+                  outputImages: [
+                    ...(generatedImages || []),
+                    ...(thread.outputImages || [])
+                  ],
                 }
               : thread,
           ),
         );
+        // Optionally select the new image
+        setSelectedImageIndex(0);
 
         setIsGenerating(false);
       } else {
@@ -1729,6 +1897,7 @@ export default function Page() {
   }, [charIndex, promptIndex, isGenerating]);
 
   return (
+    
     <div className="h-screen bg-gray-100 flex font-sans">
       {/* Sidebar */}
       <div className="w-60 bg-gray-200 flex flex-col z-40">
