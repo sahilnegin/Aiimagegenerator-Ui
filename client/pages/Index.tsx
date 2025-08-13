@@ -741,7 +741,19 @@ export default function Index() {
                   const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
                   const response = await fetch(csvUrl);
                   const csvText = await response.text();
-                  console.log('Raw CSV data:', csvText);
+                  console.log('=== RAW CSV DATA ===');
+                  console.log(csvText);
+
+                  // Parse and show each row
+                  const rows = csvText.split('\n').filter(row => row.trim());
+                  console.log('\n=== PARSED ROWS ===');
+                  rows.forEach((row, index) => {
+                    console.log(`Row ${index}:`, row);
+                    if (row.toLowerCase().includes('protein')) {
+                      console.log('🟢 PROTEIN ROW FOUND:', row);
+                    }
+                  });
+
                   alert('CSV data logged to console - check F12 Console tab');
                 } catch (error) {
                   console.error('Failed to fetch CSV:', error);
