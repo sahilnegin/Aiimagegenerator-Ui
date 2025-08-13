@@ -470,7 +470,7 @@ export default function Index() {
   }, [charIndex, promptIndex, isGenerating]);
 
   return (
-    <div className="h-screen bg-gray-100 flex">
+    <div className="h-screen bg-gray-100 flex font-sans">
       {/* Sidebar */}
       <div className="w-60 bg-gray-200 flex flex-col z-40">
         {/* Chat Icon */}
@@ -484,7 +484,7 @@ export default function Index() {
         <div className="px-4 pb-4">
           <button
             onClick={createNewChat}
-            className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors"
+            className="w-full bg-white border border-gray-300 rounded px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50 transition-colors"
           >
             New Chat
           </button>
@@ -500,9 +500,9 @@ export default function Index() {
                 setSelectedImageIndex(null);
               }}
               className={cn(
-                "px-3 py-2 text-sm cursor-pointer transition-colors rounded mb-1 group",
+                "px-3 py-2 text-sm font-medium cursor-pointer transition-colors rounded mb-1 group",
                 selectedThread === thread.id
-                  ? "bg-white text-black font-medium"
+                  ? "bg-white text-black font-semibold"
                   : "text-gray-600 hover:text-gray-800 hover:bg-gray-100",
               )}
               title={thread.messages[0]?.text || "New Chat"}
@@ -642,7 +642,7 @@ export default function Index() {
                           : "bg-gray-100 text-gray-900",
                       )}
                     >
-                      <div className="whitespace-pre-wrap text-[15px] leading-relaxed font-normal">
+                      <div className="whitespace-pre-wrap text-base leading-relaxed font-normal">
                         {message.text.includes("**Shot ") ? (
                           // Format shot descriptions with better styling
                           <div className="space-y-4">
@@ -706,7 +706,7 @@ export default function Index() {
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.1s]"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-gray-600 font-medium">
                           Generating images...
                         </span>
                       </div>
@@ -758,7 +758,7 @@ export default function Index() {
                   placeholder={
                     placeholderText || "Start typing your prompt here..."
                   }
-                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-sm min-h-[20px] max-h-48 bg-transparent text-gray-600 placeholder-gray-400"
+                  className="w-full resize-none border-0 p-0 focus:outline-none focus:ring-0 text-base min-h-[20px] max-h-48 bg-transparent text-gray-700 placeholder-gray-400 font-normal"
                   rows={1}
                   disabled={isGenerating || currentThread?.isFrozen}
                 />
