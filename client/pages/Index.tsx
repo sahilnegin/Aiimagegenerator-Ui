@@ -507,7 +507,7 @@ export default function Index() {
             >
               <div className="line-clamp-2 leading-tight">{thread.title}</div>
               {thread.id.startsWith("excel-new-") && (
-                <div className="text-xs text-green-600 mt-1">✨ New Import</div>
+                // <div className="text-xs text-green-600 mt-1">✨ New Import</div>
               )}
               {thread.id.startsWith("excel-") &&
                 !thread.id.startsWith("excel-new-") && (
