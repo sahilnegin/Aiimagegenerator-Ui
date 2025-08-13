@@ -252,17 +252,31 @@ export default function Index() {
     return result;
   };
 
-  // Load data on component mount and set up auto-refresh
+  // Load data on component mount and refresh on page reload
   useEffect(() => {
     fetchGoogleSheetData();
+  }, []);
 
-    // Auto-refresh every 5 minutes (300000ms)
-    const interval = setInterval(() => {
+  // Fetch data when page gains focus (user returns to tab)
+  useEffect(() => {
+    const handleFocus = () => {
       fetchGoogleSheetData();
-    }, 300000);
+    };
 
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
+
+  // Fetch data when page becomes visible again
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchGoogleSheetData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   // Function to convert Google Drive links to direct image URLs
@@ -754,65 +768,8 @@ export default function Index() {
             </div>
           )}
 
-          {/* Debug and refresh section */}
-          <div className="px-3 py-2 border-t border-gray-300 mt-2 space-y-1">
-            <button
-              onClick={fetchGoogleSheetData}
-              disabled={isLoadingSheetData}
-              className="w-full text-xs text-blue-600 hover:text-blue-800 py-1 px-2 bg-blue-50 hover:bg-blue-100 rounded transition-colors disabled:opacity-50"
-            >
-              🔄 Refresh Sheet Data
-            </button>
-            <button
-              onClick={async () => {
-                try {
-                  const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
-                  const response = await fetch(csvUrl);
-                  const csvText = await response.text();
-                  console.log("=== RAW CSV DATA ===");
-                  console.log(csvText);
-
-                  // Parse and show each row
-                  const rows = csvText.split("\n").filter((row) => row.trim());
-                  console.log("\n=== PARSED ROWS ===");
-                  rows.forEach((row, index) => {
-                    console.log(`Row ${index}:`, row);
-                    if (row.toLowerCase().includes("protein")) {
-                      console.log("🟢 PROTEIN ROW FOUND:", row);
-                    }
-                  });
-
-                  alert("CSV data logged to console - check F12 Console tab");
-                } catch (error) {
-                  console.error("Failed to fetch CSV:", error);
-                  alert("Failed to fetch CSV: " + error.message);
-                }
-              }}
-              className="w-full text-xs text-green-600 hover:text-green-800 py-1 px-2 bg-green-50 hover:bg-green-100 rounded transition-colors"
-            >
-              📋 Show Raw CSV
-            </button>
-            <button
-              onClick={() => {
-                console.log("=== ALL PARSED CONVERSATIONS ===");
-                sheetConversations.forEach((conv, index) => {
-                  console.log(`Conversation ${index + 1}:`);
-                  console.log("- Prompt:", conv.prompt);
-                  console.log(
-                    "- Response:",
-                    conv.response?.substring(0, 100) + "...",
-                  );
-                  console.log("- Image Links:", conv.imageLinks);
-                  console.log("---");
-                });
-                alert(
-                  "All conversations logged to console - check F12 Console tab",
-                );
-              }}
-              className="w-full text-xs text-purple-600 hover:text-purple-800 py-1 px-2 bg-purple-50 hover:bg-purple-100 rounded transition-colors"
-            >
-              🔍 Show All Conversations
-            </button>
+          {/* Status section */}
+          <div className="px-3 py-2 border-t border-gray-300 mt-2">
             <div className="text-xs text-gray-500 text-center">
               {sheetConversations.length} conversations loaded
             </div>
