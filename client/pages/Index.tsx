@@ -106,37 +106,59 @@ export default function Index() {
 
             // Parse image links from the Image Link column (column 2)
             const imageLinks = [];
-            console.log(`Row ${i} Image column content:`, imageColumn.substring(0, 200));
+            console.log(
+              `Row ${i} Image column content:`,
+              imageColumn.substring(0, 200),
+            );
 
             if (imageColumn) {
               // Check if the cell contains an array (JSON format)
-              if (imageColumn.startsWith('[') && imageColumn.endsWith(']')) {
+              if (imageColumn.startsWith("[") && imageColumn.endsWith("]")) {
                 try {
                   const parsedArray = JSON.parse(imageColumn);
                   if (Array.isArray(parsedArray)) {
-                    console.log(`Found JSON array with ${parsedArray.length} items:`, parsedArray);
-                    parsedArray.forEach(link => {
-                      if (typeof link === 'string' && (link.includes("drive.google.com") || link.includes("http"))) {
+                    console.log(
+                      `Found JSON array with ${parsedArray.length} items:`,
+                      parsedArray,
+                    );
+                    parsedArray.forEach((link) => {
+                      if (
+                        typeof link === "string" &&
+                        (link.includes("drive.google.com") ||
+                          link.includes("http"))
+                      ) {
                         imageLinks.push(link);
                         console.log(`Added from JSON array:`, link);
                       }
                     });
                   }
                 } catch (e) {
-                  console.log(`Failed to parse JSON array in image column: ${imageColumn.substring(0, 50)}...`);
+                  console.log(
+                    `Failed to parse JSON array in image column: ${imageColumn.substring(0, 50)}...`,
+                  );
                 }
               }
               // Check if it's a single Google Drive link or any HTTP link
-              else if (imageColumn.includes("drive.google.com") || imageColumn.includes("http")) {
+              else if (
+                imageColumn.includes("drive.google.com") ||
+                imageColumn.includes("http")
+              ) {
                 imageLinks.push(imageColumn);
                 console.log(`Added single image link:`, imageColumn);
               }
               // Check if it's comma-separated links
-              else if (imageColumn.includes(',') && (imageColumn.includes("drive.google.com") || imageColumn.includes("http"))) {
-                const links = imageColumn.split(',').map(link => link.trim());
+              else if (
+                imageColumn.includes(",") &&
+                (imageColumn.includes("drive.google.com") ||
+                  imageColumn.includes("http"))
+              ) {
+                const links = imageColumn.split(",").map((link) => link.trim());
                 console.log(`Found comma-separated links:`, links);
-                links.forEach(link => {
-                  if (link.includes("drive.google.com") || link.includes("http")) {
+                links.forEach((link) => {
+                  if (
+                    link.includes("drive.google.com") ||
+                    link.includes("http")
+                  ) {
                     imageLinks.push(link);
                     console.log(`Added from comma-separated:`, link);
                   }
@@ -158,17 +180,17 @@ export default function Index() {
               });
 
               // Special logging for protein bar conversation
-              if (prompt.toLowerCase().includes('protein')) {
-                console.log('🟢 PROTEIN BAR CONVERSATION FOUND:');
-                console.log('- Prompt:', prompt);
-                console.log('- Image column content:', imageColumn);
-                console.log('- Parsed image links:', imageLinks);
-                console.log('- Raw row data:', columns);
+              if (prompt.toLowerCase().includes("protein")) {
+                console.log("🟢 PROTEIN BAR CONVERSATION FOUND:");
+                console.log("- Prompt:", prompt);
+                console.log("- Image column content:", imageColumn);
+                console.log("- Parsed image links:", imageLinks);
+                console.log("- Raw row data:", columns);
               }
 
               console.log(
                 `Added conversation: "${prompt.substring(0, 50)}..." with ${imageLinks.length} images`,
-                imageLinks.length > 0 ? imageLinks : 'No images found'
+                imageLinks.length > 0 ? imageLinks : "No images found",
               );
             } else {
               console.log(
@@ -245,12 +267,12 @@ export default function Index() {
 
   // Function to convert Google Drive links to direct image URLs
   const convertGoogleDriveLink = (driveLink: string) => {
-    if (!driveLink || typeof driveLink !== 'string') {
-      console.log('Invalid drive link:', driveLink);
+    if (!driveLink || typeof driveLink !== "string") {
+      console.log("Invalid drive link:", driveLink);
       return driveLink;
     }
 
-    console.log('Converting Google Drive link:', driveLink);
+    console.log("Converting Google Drive link:", driveLink);
 
     if (driveLink.includes("drive.google.com")) {
       let fileId = null;
@@ -260,7 +282,7 @@ export default function Index() {
         /\/file\/d\/([a-zA-Z0-9-_]+)/, // /file/d/ID/view or /file/d/ID/edit
         /\/d\/([a-zA-Z0-9-_]+)/, // /d/ID
         /[?&]id=([a-zA-Z0-9-_]+)/, // ?id=ID or &id=ID
-        /\/([a-zA-Z0-9-_]{25,})(?:\/|$)/ // Just a long ID in the URL
+        /\/([a-zA-Z0-9-_]{25,})(?:\/|$)/, // Just a long ID in the URL
       ];
 
       for (const pattern of patterns) {
@@ -277,16 +299,20 @@ export default function Index() {
         console.log(`Converted ${driveLink} -> ${convertedUrl}`);
         return convertedUrl;
       } else {
-        console.log('Could not extract file ID from:', driveLink);
+        console.log("Could not extract file ID from:", driveLink);
       }
     }
 
     // If it's already a direct image URL, return as is
-    if (driveLink.includes('googleusercontent.com') || driveLink.includes('uc?export=view') || driveLink.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+    if (
+      driveLink.includes("googleusercontent.com") ||
+      driveLink.includes("uc?export=view") ||
+      driveLink.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+    ) {
       return driveLink;
     }
 
-    console.log('Link not converted:', driveLink);
+    console.log("Link not converted:", driveLink);
     return driveLink;
   };
 
@@ -348,7 +374,7 @@ export default function Index() {
       console.log(`Thread "${threadId}":`, {
         originalLinks: conv.imageLinks,
         convertedLinks: outputImages,
-        linkCount: outputImages.length
+        linkCount: outputImages.length,
       });
 
       return {
@@ -381,7 +407,9 @@ export default function Index() {
       const sheetThreads = createThreadsFromSheetData();
       console.log(`Creating ${sheetThreads.length} threads from sheet data`);
       sheetThreads.forEach((thread, index) => {
-        console.log(`Thread ${index + 1}: "${thread.title.substring(0, 30)}..." with ${thread.outputImages.length} images`);
+        console.log(
+          `Thread ${index + 1}: "${thread.title.substring(0, 30)}..." with ${thread.outputImages.length} images`,
+        );
       });
       setThreads((prevThreads) => [
         // Keep the "New Chat" thread at the top
@@ -711,7 +739,7 @@ export default function Index() {
               title={thread.messages[0]?.text || "New Chat"}
             >
               <div className="line-clamp-2 leading-tight">{thread.title}</div>
-              </div>
+            </div>
           ))}
 
           {/* Loading state for Google Sheets data */}
@@ -741,23 +769,23 @@ export default function Index() {
                   const csvUrl = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv&gid=${SHEET_GID}&single=true&output=csv`;
                   const response = await fetch(csvUrl);
                   const csvText = await response.text();
-                  console.log('=== RAW CSV DATA ===');
+                  console.log("=== RAW CSV DATA ===");
                   console.log(csvText);
 
                   // Parse and show each row
-                  const rows = csvText.split('\n').filter(row => row.trim());
-                  console.log('\n=== PARSED ROWS ===');
+                  const rows = csvText.split("\n").filter((row) => row.trim());
+                  console.log("\n=== PARSED ROWS ===");
                   rows.forEach((row, index) => {
                     console.log(`Row ${index}:`, row);
-                    if (row.toLowerCase().includes('protein')) {
-                      console.log('🟢 PROTEIN ROW FOUND:', row);
+                    if (row.toLowerCase().includes("protein")) {
+                      console.log("🟢 PROTEIN ROW FOUND:", row);
                     }
                   });
 
-                  alert('CSV data logged to console - check F12 Console tab');
+                  alert("CSV data logged to console - check F12 Console tab");
                 } catch (error) {
-                  console.error('Failed to fetch CSV:', error);
-                  alert('Failed to fetch CSV: ' + error.message);
+                  console.error("Failed to fetch CSV:", error);
+                  alert("Failed to fetch CSV: " + error.message);
                 }
               }}
               className="w-full text-xs text-green-600 hover:text-green-800 py-1 px-2 bg-green-50 hover:bg-green-100 rounded transition-colors"
@@ -766,15 +794,20 @@ export default function Index() {
             </button>
             <button
               onClick={() => {
-                console.log('=== ALL PARSED CONVERSATIONS ===');
+                console.log("=== ALL PARSED CONVERSATIONS ===");
                 sheetConversations.forEach((conv, index) => {
                   console.log(`Conversation ${index + 1}:`);
-                  console.log('- Prompt:', conv.prompt);
-                  console.log('- Response:', conv.response?.substring(0, 100) + '...');
-                  console.log('- Image Links:', conv.imageLinks);
-                  console.log('---');
+                  console.log("- Prompt:", conv.prompt);
+                  console.log(
+                    "- Response:",
+                    conv.response?.substring(0, 100) + "...",
+                  );
+                  console.log("- Image Links:", conv.imageLinks);
+                  console.log("---");
                 });
-                alert('All conversations logged to console - check F12 Console tab');
+                alert(
+                  "All conversations logged to console - check F12 Console tab",
+                );
               }}
               className="w-full text-xs text-purple-600 hover:text-purple-800 py-1 px-2 bg-purple-50 hover:bg-purple-100 rounded transition-colors"
             >
@@ -793,16 +826,19 @@ export default function Index() {
         <div className="bg-yellow-50 border-b border-yellow-200 p-2 text-xs">
           <details className="cursor-pointer">
             <summary className="font-medium text-yellow-800">
-              🐛 Debug: "{currentThread?.title?.substring(0, 30)}..." - {currentThread?.outputImages?.length || 0} images
+              🐛 Debug: "{currentThread?.title?.substring(0, 30)}..." -{" "}
+              {currentThread?.outputImages?.length || 0} images
             </summary>
             <div className="mt-2 space-y-2 max-h-40 overflow-y-auto">
               <div className="text-yellow-700">
                 <strong>Thread ID:</strong> {currentThread?.id}
               </div>
               <div className="text-yellow-700">
-                <strong>Is Frozen:</strong> {currentThread?.isFrozen ? 'Yes' : 'No'}
+                <strong>Is Frozen:</strong>{" "}
+                {currentThread?.isFrozen ? "Yes" : "No"}
               </div>
-              {currentThread?.outputImages && currentThread.outputImages.length > 0 ? (
+              {currentThread?.outputImages &&
+              currentThread.outputImages.length > 0 ? (
                 <div>
                   <strong className="text-yellow-800">Image URLs:</strong>
                   {currentThread.outputImages.map((url, i) => (
@@ -814,16 +850,18 @@ export default function Index() {
               ) : (
                 <div className="text-red-600">
                   <strong>No images found for this conversation!</strong>
-                  <br />Check the "📋 Show Raw CSV" to see what's in the Image Link column.
+                  <br />
+                  Check the "📋 Show Raw CSV" to see what's in the Image Link
+                  column.
                 </div>
               )}
               <button
                 onClick={() => {
-                  const conv = sheetConversations.find((c, index) =>
-                    currentThread?.id === `sheet-${index + 1}`
+                  const conv = sheetConversations.find(
+                    (c, index) => currentThread?.id === `sheet-${index + 1}`,
                   );
-                  console.log('Selected conversation raw data:', conv);
-                  alert('Raw conversation data logged to console - check F12');
+                  console.log("Selected conversation raw data:", conv);
+                  alert("Raw conversation data logged to console - check F12");
                 }}
                 className="mt-1 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs"
               >
@@ -879,14 +917,20 @@ export default function Index() {
                       alt={`Generated image ${index + 1}`}
                       className="h-full w-24 object-cover rounded bg-gray-200"
                       onLoad={(e) => {
-                        console.log(`Image ${index + 1} loaded successfully:`, image);
+                        console.log(
+                          `Image ${index + 1} loaded successfully:`,
+                          image,
+                        );
                         const target = e.target as HTMLImageElement;
-                        target.style.opacity = '1';
+                        target.style.opacity = "1";
                       }}
                       onError={(e) => {
-                        console.error(`Image ${index + 1} failed to load:`, image);
+                        console.error(
+                          `Image ${index + 1} failed to load:`,
+                          image,
+                        );
                         const target = e.target as HTMLImageElement;
-                        target.style.opacity = '0.5';
+                        target.style.opacity = "0.5";
                         target.title = `Failed to load: ${image}`;
 
                         if (
@@ -900,7 +944,7 @@ export default function Index() {
                           );
                         }
                       }}
-                      style={{ opacity: 0.7, transition: 'opacity 0.3s' }}
+                      style={{ opacity: 0.7, transition: "opacity 0.3s" }}
                     />
                   </div>
                 ))}
